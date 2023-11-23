@@ -1,113 +1,274 @@
-import Image from 'next/image'
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+
+const App = () => {
+  const [showAreaPopup, setShowAreaPopup] = useState(false); // 聖地エリア選択画面
+  const [showWorkPopup, setShowWorkPopup] = useState(false); // 作品選択画面
+  const [showStationPopup, setShowStationPopup] = useState(false); // 出発駅選択画面
+
+  const [selectedArea, setSelectedArea] = useState(""); // 聖地のエリア
+  const [selectedWork, setSelectedWork] = useState(""); // 選択された作品
+  const [selectedStation, setSelectedStation] = useState(""); // 最寄り駅
+
+  const [titles, setTitles] = useState([]); // スクレイプしたアニメタイトルを格納
+  const [prefectures, setPrefectures] = useState([]); // スクレイプした都道府県を格納
+  const [query, setQuery] = useState("");
+  const [geo, setGeo] = useState<number[]>([]); // 外部 API から地理データを格納
+
+  // ここでスクレイピングする。わざわざファイル分割しても醜くなるだけ。
+  const handleFetchData = async () => {
+    try {
+      const response = await fetch(`http://localhost:3300`);
+      const data = await response.json();
+
+      console.log(data);
+
+      // アニメタイトルのみの配列を取得
+      const titles = data.formattedData.map(
+        (anime: { title: any }) => anime.title
+      );
+      //アニメの聖地のある都道府県の配列を取得
+      const prefectures = data.formattedData.map(
+        (anime: { prefecture: any }) => anime.prefecture
+      );
+
+      setTitles(titles);
+      setPrefectures(prefectures);
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
+  };
+
+  const areas = [
+    {
+      group: "北海道・東北",
+      prefectures: [
+        "北海道",
+        "青森県",
+        "岩手県",
+        "宮城県",
+        "秋田県",
+        "山形県",
+        "福島県",
+      ],
+    },
+    {
+      group: "関東",
+      prefectures: [
+        "東京都",
+        "神奈川県",
+        "埼玉県",
+        "千葉県",
+        "茨城県",
+        "栃木県",
+        "群馬県",
+      ],
+    },
+    {
+      group: "中部",
+      prefectures: ["愛知県", "岐阜県", "静岡県", "三重県", "長野県"],
+    },
+    {
+      group: "近畿",
+      prefectures: [
+        "大阪府",
+        "兵庫県",
+        "京都府",
+        "滋賀県",
+        "奈良県",
+        "和歌山県",
+      ],
+    },
+    {
+      group: "中国",
+      prefectures: ["広島県", "岡山県", "鳥取県", "島根県", "山口県"],
+    },
+    { group: "四国", prefectures: ["香川県", "徳島県", "愛媛県", "高知県"] },
+    {
+      group: "九州・沖縄",
+      prefectures: [
+        "福岡県",
+        "佐賀県",
+        "長崎県",
+        "大分県",
+        "熊本県",
+        "宮崎県",
+        "鹿児島県",
+        "沖縄県",
+      ],
+    },
+  ];
+
+  // それぞれエリア・作品・最寄り駅が変更された際に、seleced●●●●に再代入されるハンドル
+  const handleChangeArea = (e: { target: any }) => {
+    setSelectedArea(e.target.value);
+  };
+  const handleChangeWork = (e: { target: any }) => {
+    setSelectedWork(e.target.value);
+  };
+  const handleChangeStation = (e: { target: any }) => {
+    setSelectedStation(e.target.value);
+  };
+
+  // 緯度経度を取得
+  const handleGeocoding = async () => {
+    try {
+      if (!selectedArea) {
+        // トースト通知
+        return;
+      }
+      const res = await fetch(
+        `http://localhost:3000/api/search/${selectedArea}`,
+        { cache: "no-store" }
+      ); // ダイナミックルーティングを使用
+      const xmlText = await res.text();
+
+      // テキストに変換した XML から緯度を抽出
+      const startIndex = xmlText.indexOf("<lat>") + "<lat>".length;
+      const endIndex = xmlText.indexOf("</lat>");
+      const lat: number = parseFloat(xmlText.substring(startIndex, endIndex));
+
+      // テキストに変換した XML から経度を抽出
+      const startIndex_ = xmlText.indexOf("<lng>") + "<lng>".length;
+      const endIndex_ = xmlText.indexOf("</lng>");
+      const lng: number = parseFloat(xmlText.substring(startIndex_, endIndex_));
+
+      const latLng: number[] = [lat, lng];
+      console.log(latLng);
+      setGeo(latLng);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // 以下は旧式の書き方。上の方が直感的で分かりやすい。
+  // const handleGeocoding = () => {
+  //   fetch(`http://localhost:3000/api/search`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setGeo(data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  //   console.log(geo);
+  // };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="App min-h-screen bg-gray-300">
+      <h1>聖地行き方検索ツール</h1>
+      <div id="areas">
+        <label
+          htmlFor="area"
+          className="block text-sm font-medium leading-6 text-gray-900"
+        >
+          エリア選択
+        </label>
+        <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span className="text-gray-500 sm:text-sm pl-1">∴</span>
+          </div>
+          <select
+            id="area"
+            name="area"
+            value={selectedArea}
+            onChange={handleChangeArea}
+            className="block w-full rounded-md border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            <option value="" disabled>
+              地域を選択
+            </option>
+            {areas.map((areaGroup, index) => (
+              <optgroup label={areaGroup.group} key={index}>
+                {areaGroup.prefectures.map((prefecture) => (
+                  <option value={prefecture} key={prefecture}>
+                    {prefecture}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div id="works">
+        <label
+          htmlFor="work"
+          className="block text-sm font-medium leading-6 text-gray-900"
+        >
+          作品選択
+        </label>
+        <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span className="text-gray-500 sm:text-sm pl-1">:::</span>
+          </div>
+          <select
+            id="work"
+            name="work"
+            value={selectedWork}
+            onChange={handleChangeWork}
+            className="block w-full rounded-md border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+          >
+            <option value="" disabled>
+              作品を選択
+            </option>
+          </select>
+        </div>
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div id="station">
+        <label
+          htmlFor="station"
+          className="block text-sm font-medium leading-6 text-gray-900"
         >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+          出発駅を指定
+        </label>
+        <div className="relative mt-2 rounded-md shadow-sm">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span className="text-gray-500 sm:text-sm">Go</span>
+          </div>
+          <input
+            type="text"
+            placeholder="最寄り駅を入力"
+            className="block w-full rounded-md border-0 mb-3 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            required
+            onChange={handleChangeStation}
+          />
+          <div className="absolute inset-y-0 right-0 flex items-center"></div>
+        </div>
+        <div className="flex h-10">
+          <button
+            className="bg-gray-400 font-semibold text-white rounded-md mx-1"
+            style={{ flex: "1" }}
+          >
+            クリア
+          </button>
+          <button
+            className="bg-violet-500	 font-semibold text-white rounded-md mx-1"
+            style={{ flex: "4" }}
+          >
+            検索
+          </button>
+          <button className="bg-red-400" onClick={handleGeocoding}>
+            入力
+          </button>
+        </div>
       </div>
-    </main>
-  )
-}
+      <button
+        className="bg-gray-500 text-white mx-3 my-5 w-full"
+        onClick={handleFetchData}
+      >
+        押してね
+      </button>
+      {geo[0]} ::: {geo[1]}
+      <ul>
+        {titles.map((title, index) => (
+          <li key={index}>{`${index + 1}: ${title} -------------- ${
+            prefectures[index]
+          }`}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
