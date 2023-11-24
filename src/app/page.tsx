@@ -1,44 +1,48 @@
 "use client";
 
 import { useState } from "react";
+import { animeData } from "./library/anime-data";
+import { jrStations } from "./library/stations-jr";
 
 const App = () => {
-  const [showAreaPopup, setShowAreaPopup] = useState(false); // 聖地エリア選択画面
-  const [showWorkPopup, setShowWorkPopup] = useState(false); // 作品選択画面
-  const [showStationPopup, setShowStationPopup] = useState(false); // 出発駅選択画面
-
   const [selectedArea, setSelectedArea] = useState(""); // 聖地のエリア
   const [selectedWork, setSelectedWork] = useState(""); // 選択された作品
-  const [selectedStation, setSelectedStation] = useState(""); // 最寄り駅
+  const [selectedStation, setSelectedStation] = useState(null); // 最寄り駅
+  const [predStations, setPredStations] = useState<string[]>([]);
+  const [selectedPref, setSelectedPref] = useState<string>("");
 
-  const [titles, setTitles] = useState([]); // スクレイプしたアニメタイトルを格納
-  const [prefectures, setPrefectures] = useState([]); // スクレイプした都道府県を格納
-  const [query, setQuery] = useState("");
+  // const [titles, setTitles] = useState([]); // スクレイプしたアニメタイトルを格納
+  // const [prefectures, setPrefectures] = useState([]); // スクレイプした都道府県を格納
+
+  const [animeTitles, setAnimeTitles] = useState<string[]>([]); // 選択した都道府県に存在するアニメの聖地
   const [geo, setGeo] = useState<number[]>([]); // 外部 API から地理データを格納
 
-  // ここでスクレイピングする。わざわざファイル分割しても醜くなるだけ。
-  const handleFetchData = async () => {
-    try {
-      const response = await fetch(`http://localhost:3300`);
-      const data = await response.json();
+  // ここでスクレイピングする。
+  // わざわざファイル分割しても醜くなるだけ。
+  // const handleFetchData = async () => {
+  //   try {
+  //     const response = await fetch(`http://localhost:3300`);
+  //     const data = await response.json();
 
-      console.log(data);
+  //     console.log(data);
 
-      // アニメタイトルのみの配列を取得
-      const titles = data.formattedData.map(
-        (anime: { title: any }) => anime.title
-      );
-      //アニメの聖地のある都道府県の配列を取得
-      const prefectures = data.formattedData.map(
-        (anime: { prefecture: any }) => anime.prefecture
-      );
+  //     // アニメタイトルのみの配列を取得
+  //     const titles = data.formattedData.map(
+  //       (anime: { title: any }) => anime.title
+  //     );
+  //     //アニメの聖地のある都道府県の配列を取得
+  //     const prefectures = data.formattedData.map(
+  //       (anime: { prefecture: any }) => anime.prefecture
+  //     );
 
-      setTitles(titles);
-      setPrefectures(prefectures);
-    } catch (error) {
-      console.error("エラーが発生しました:", error);
-    }
-  };
+  //     setTitles(titles);
+  //     setPrefectures(prefectures);
+  //   } catch (error) {
+  //     console.error("エラーが発生しました:", error);
+  //   }
+  // };
+
+  ////
 
   const areas = [
     {
@@ -100,43 +104,79 @@ const App = () => {
     },
   ];
 
+  ////// 駅検索メソッド
+
   // それぞれエリア・作品・最寄り駅が変更された際に、seleced●●●●に再代入されるハンドル
   const handleChangeArea = (e: { target: any }) => {
-    setSelectedArea(e.target.value);
-  };
-  const handleChangeWork = (e: { target: any }) => {
-    setSelectedWork(e.target.value);
-  };
-  const handleChangeStation = (e: { target: any }) => {
-    setSelectedStation(e.target.value);
+    const selectedArea = e.target.value;
+    setSelectedArea(selectedArea);
+    setSelectedWork(""); // 2つ目のドロップダウンリストをリセット
+
+    // 選択したエリアに存在する作品を抽出
+    const filteredTitles = animeData
+      .filter((anime) => anime.prefecture.includes(selectedArea))
+      .map((anime) => anime.title);
+    setAnimeTitles(filteredTitles);
+    console.log(filteredTitles, "filteredTitles");
   };
 
-  // 緯度経度を取得
+  // 作品選択時にその作品聖地の都道府県をセット
+  const handleChangeWork = (e: { target: any }) => {
+    const selectedWork = e.target.value;
+    setSelectedWork(selectedWork);
+
+    const pref = animeData.find(
+      (anime) => anime.title === selectedWork
+    )?.prefecture;
+    setSelectedPref(pref!);
+  };
+
+  const handleChangeStation = (e: { target: any }) => {
+    const selectedStation = e.target.value || null;
+    setSelectedStation(selectedStation);
+
+    // 駅の予測
+    const predictedStations = jrStations
+      .filter(
+        (station) =>
+          station.kana.startsWith(selectedStation) ||
+          station.name.startsWith(selectedStation)
+      )
+      .map((item) => item.name);
+    setPredStations(predictedStations);
+  };
+
+  const handleClearInfo = () => {
+    setSelectedArea("");
+    setSelectedWork("");
+    setSelectedStation(null);
+    setPredStations([]);
+    setAnimeTitles([]);
+  };
+
+  // 緯度経度を取得。CORS 回避のため、プロキシサーバー経由で外部 API にリクエスト
   const handleGeocoding = async () => {
     try {
       if (!selectedArea) {
         // トースト通知
+        alert("おい");
         return;
       }
       const res = await fetch(
-        `http://localhost:3000/api/search/${selectedArea}`,
+        `http://localhost:3000/api/search/${encodeURIComponent(selectedPref)}`,
         { cache: "no-store" }
       ); // ダイナミックルーティングを使用
-      const xmlText = await res.text();
+      console.log(res);
+      const stations = await res.json();
 
-      // テキストに変換した XML から緯度を抽出
-      const startIndex = xmlText.indexOf("<lat>") + "<lat>".length;
-      const endIndex = xmlText.indexOf("</lat>");
-      const lat: number = parseFloat(xmlText.substring(startIndex, endIndex));
+      // // const convert = require("xml-js");
+      // // const json = convert.xml2json(xmlText, { compact: true, spaces: 2 });
+      // // console.log(xmlText, json);
+      // // const lat = json.result.address._text;
+      // // const lng = json.result.coordinate.lng._text;
 
-      // テキストに変換した XML から経度を抽出
-      const startIndex_ = xmlText.indexOf("<lng>") + "<lng>".length;
-      const endIndex_ = xmlText.indexOf("</lng>");
-      const lng: number = parseFloat(xmlText.substring(startIndex_, endIndex_));
-
-      const latLng: number[] = [lat, lng];
-      console.log(latLng);
-      setGeo(latLng);
+      console.log(stations);
+      setGeo(stations);
     } catch (error) {
       console.log(error);
     }
@@ -170,7 +210,6 @@ const App = () => {
             <span className="text-gray-500 sm:text-sm pl-1">∴</span>
           </div>
           <select
-            id="area"
             name="area"
             value={selectedArea}
             onChange={handleChangeArea}
@@ -181,8 +220,8 @@ const App = () => {
             </option>
             {areas.map((areaGroup, index) => (
               <optgroup label={areaGroup.group} key={index}>
-                {areaGroup.prefectures.map((prefecture) => (
-                  <option value={prefecture} key={prefecture}>
+                {areaGroup.prefectures.map((prefecture, index) => (
+                  <option value={prefecture} key={index}>
                     {prefecture}
                   </option>
                 ))}
@@ -212,6 +251,9 @@ const App = () => {
             <option value="" disabled>
               作品を選択
             </option>
+            {animeTitles.map((animeTitle, index) => (
+              <option key={index}>{animeTitle}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -231,42 +273,44 @@ const App = () => {
             placeholder="最寄り駅を入力"
             className="block w-full rounded-md border-0 mb-3 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
             required
+            value={selectedStation || ""}
             onChange={handleChangeStation}
           />
           <div className="absolute inset-y-0 right-0 flex items-center"></div>
+        </div>
+        <div>
+          {predStations.map((station, index) => (
+            <div key={index}>{station}</div>
+          ))}
         </div>
         <div className="flex h-10">
           <button
             className="bg-gray-400 font-semibold text-white rounded-md mx-1"
             style={{ flex: "1" }}
+            onClick={handleClearInfo}
           >
             クリア
           </button>
           <button
             className="bg-violet-500	 font-semibold text-white rounded-md mx-1"
             style={{ flex: "4" }}
+            onClick={handleGeocoding}
           >
             検索
           </button>
-          <button className="bg-red-400" onClick={handleGeocoding}>
-            入力
-          </button>
         </div>
       </div>
-      <button
-        className="bg-gray-500 text-white mx-3 my-5 w-full"
-        onClick={handleFetchData}
-      >
+      <button className="bg-gray-500 text-white mx-3 my-5 w-full">
         押してね
       </button>
-      {geo[0]} ::: {geo[1]}
-      <ul>
+      {selectedArea ? `${geo[0]} ::: ${geo[1]}` : null}
+      {/* <ul>
         {titles.map((title, index) => (
           <li key={index}>{`${index + 1}: ${title} -------------- ${
             prefectures[index]
           }`}</li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   );
 };
