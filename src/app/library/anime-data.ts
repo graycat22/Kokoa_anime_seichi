@@ -38,7 +38,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "「ウルトラマンシリーズ」\n（円谷英二氏生誕の地）",
+    title: "「ウルトラマンシリーズ」（円谷英二氏生誕の地）",
     prefecture: "福島県 須賀川市",
     stamp: false,
   },
@@ -69,7 +69,7 @@ export const animeData = [
   },
   { title: "月がきれい", prefecture: "埼玉県 川越市", stamp: false },
   {
-    title: "あの日見た花の名前を\n僕達はまだ知らない。",
+    title: "あの日見た花の名前を僕達はまだ知らない。",
     prefecture: "埼玉県 秩父市",
     stamp: false,
   },
@@ -110,7 +110,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "俺の妹がこんなに\n可愛いわけがない",
+    title: "俺の妹がこんなに可愛いわけがない",
     prefecture: "千葉県 千葉市",
     stamp: false,
   },
@@ -157,7 +157,7 @@ export const animeData = [
   { title: "さらざんまい", prefecture: "東京都 台東区", stamp: false },
   {
     title:
-      "刀剣乱舞ONLINE\n（東京国立博物館）\n ※登場する刀剣男士のモチーフとなった刀剣の一部を収蔵",
+      "刀剣乱舞ONLINE（東京国立博物館） ※登場する刀剣男士のモチーフとなった刀剣の一部を収蔵",
     prefecture: "東京都 台東区",
     stamp: false,
   },
@@ -172,7 +172,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "「ウルトラマンシリーズ」\n（ウルトラマン商店街）",
+    title: "「ウルトラマンシリーズ」（ウルトラマン商店街）",
     prefecture: "東京都 世田谷区",
     stamp: false,
   },
@@ -370,7 +370,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "一休さん\n（酬恩庵一休寺）",
+    title: "一休さん（酬恩庵一休寺）",
     prefecture: "京都府 京田辺市",
     stamp: false,
   },
@@ -485,7 +485,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "「ウルトラマンシリーズ」\n（金城哲夫資料館）",
+    title: "「ウルトラマンシリーズ」（金城哲夫資料館）",
     prefecture: "沖縄県 南風原町",
     stamp: false,
   },
@@ -501,7 +501,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "おもちゃのまち\nバンダイミュージアム",
+    title: "おもちゃのまちバンダイミュージアム",
     prefecture: "栃木県 壬生町",
     stamp: false,
   },
@@ -556,7 +556,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "氷見市潮風ギャラリー\n（藤子不二雄Ⓐアートコレクション）",
+    title: "氷見市潮風ギャラリー（藤子不二雄Ⓐアートコレクション）",
     prefecture: "富山県 氷見市",
     stamp: false,
   },
@@ -593,7 +593,7 @@ export const animeData = [
   },
   { title: "マチ★アソビ", prefecture: "徳島県 徳島市", stamp: false },
   {
-    title: "香美市立やなせたかし記念館\nアンパンマンミュージアム",
+    title: "香美市立やなせたかし記念館アンパンマンミュージアム",
     prefecture: "高知県 香美市",
     stamp: false,
   },
@@ -613,7 +613,7 @@ export const animeData = [
     stamp: false,
   },
   {
-    title: "サンリオキャラクターパーク\nハーモニーランド",
+    title: "サンリオキャラクターパークハーモニーランド",
     prefecture: "大分県 日出町",
     stamp: false,
   },

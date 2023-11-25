@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  //   reactStrictMode: true,
+  reactStrictMode: false,
   //   // 全ての API routes にマッチ
   //   async headers() {
   //     return [

@@ -2,20 +2,26 @@
 
 import { useState } from "react";
 import { animeData } from "./library/anime-data";
-import { jrStations } from "./library/stations-jr";
+import { useRouter } from "next/navigation";
 
 const App = () => {
+  interface Station {
+    stationCode: Number;
+    stationName: String;
+    prefecture: String;
+  }
+  const router = useRouter();
+
   const [selectedArea, setSelectedArea] = useState(""); // 聖地のエリア
   const [selectedWork, setSelectedWork] = useState(""); // 選択された作品
-  const [selectedStation, setSelectedStation] = useState(null); // 最寄り駅
-  const [predStations, setPredStations] = useState<string[]>([]);
-  const [selectedPref, setSelectedPref] = useState<string>("");
+  const [stationData, setStationData] = useState<Station | null>(null); // 最寄り駅
+  const [predStations, setPredStations] = useState<Station[]>([]); // 駅の予測
+  const [selectedPref, setSelectedPref] = useState<string>(""); // API 代入用
 
   // const [titles, setTitles] = useState([]); // スクレイプしたアニメタイトルを格納
   // const [prefectures, setPrefectures] = useState([]); // スクレイプした都道府県を格納
 
   const [animeTitles, setAnimeTitles] = useState<string[]>([]); // 選択した都道府県に存在するアニメの聖地
-  const [geo, setGeo] = useState<number[]>([]); // 外部 API から地理データを格納
 
   // ここでスクレイピングする。
   // わざわざファイル分割しても醜くなるだけ。
@@ -104,8 +110,6 @@ const App = () => {
     },
   ];
 
-  ////// 駅検索メソッド
-
   // それぞれエリア・作品・最寄り駅が変更された際に、seleced●●●●に再代入されるハンドル
   const handleChangeArea = (e: { target: any }) => {
     const selectedArea = e.target.value;
@@ -131,52 +135,86 @@ const App = () => {
     setSelectedPref(pref!);
   };
 
-  const handleChangeStation = (e: { target: any }) => {
-    const selectedStation = e.target.value || null;
-    setSelectedStation(selectedStation);
+  // 駅検索メソッド
+  // const handleChangeStation = (e: { target: any }) => {
+  //   const stationData = e.target.value || null;
+  //   setStationData(stationData);
 
-    // 駅の予測
-    const predictedStations = jrStations
-      .filter(
-        (station) =>
-          station.kana.startsWith(selectedStation) ||
-          station.name.startsWith(selectedStation)
-      )
-      .map((item) => item.name);
-    setPredStations(predictedStations);
+  //   // 駅の予測
+  //   const predictedStations = jrStations
+  //     .filter(
+  //       (station) =>
+  //         station.kana.startsWith(stationData) ||
+  //         station.name.startsWith(stationData)
+  //     )
+  //     .map((item) => item.name);
+  //   setPredStations(predictedStations);
+  // };
+
+  // 駅の予測
+  const handleChangeStation = async (e: { target: any }) => {
+    const userInput = e.target.value;
+    const filteredInput =
+      userInput
+        .match(/[ぁ-んァ-ン一-龠]/g)
+        ?.filter((char: any) => !/^[a-zA-Zａ-ｚＡ-Ｚ]+$/.test(char))
+        .join("") || "";
+    const hasAlphabets = /[a-zA-Zａ-ｚＡ-Ｚ]/.test(userInput);
+    const finalInput = hasAlphabets ? "" : filteredInput; // HTTP リクエスト数を削減するため
+    console.log("userInput", userInput, finalInput, "↓↓↓結果↓↓↓");
+    if (finalInput) {
+      const railsURL = `https://api.ekispert.jp/v1/json/station/light?key=LE_UtqeL8hrwxSTW&name=${finalInput}`;
+      const res = await fetch(railsURL);
+      const data = await res.json();
+      let station_Data = data.ResultSet.Point;
+      console.log("APIレスポンス", station_Data);
+
+      if (!station_Data) {
+        return;
+      }
+
+      if (!Array.isArray(station_Data)) {
+        station_Data = [station_Data];
+      }
+      const station_data = station_Data.map((item: any) => ({
+        stationCode: item.Station.code,
+        stationName: item.Station.Name,
+        prefecture: item.Prefecture.Name,
+      }));
+      console.log("整形したcodeとname", station_data);
+      setPredStations(station_data);
+    }
+    console.log("↑↑↑↑↑↑↑↑↑↑↑↑結果↑↑↑↑↑↑↑↑↑↑↑↑");
   };
+
+  // ユーザーを予測クリックしたとき
+  const handleClickPredSta = (stationData: Station) => {
+    // 最寄り駅の設定
+    setStationData(stationData);
+  };
+
+  console.log("stationData", stationData);
 
   const handleClearInfo = () => {
     setSelectedArea("");
     setSelectedWork("");
-    setSelectedStation(null);
+    setStationData(null);
     setPredStations([]);
     setAnimeTitles([]);
   };
 
-  // 緯度経度を取得。CORS 回避のため、プロキシサーバー経由で外部 API にリクエスト
-  const handleGeocoding = async () => {
+  // 検索しルート取得。CORS 回避のため、プロキシサーバー経由で外部 API にリクエスト
+  const handleSearchRoute = async () => {
     try {
-      if (!selectedArea) {
+      if (!selectedArea || !selectedWork || !stationData) {
         // トースト通知
         alert("おい");
         return;
       }
-      const res = await fetch(
-        `http://localhost:3000/api/search/${encodeURIComponent(selectedPref)}`,
-        { cache: "no-store" }
-      ); // ダイナミックルーティングを使用
-      console.log(res);
-      const stations = await res.json();
-
-      // // const convert = require("xml-js");
-      // // const json = convert.xml2json(xmlText, { compact: true, spaces: 2 });
-      // // console.log(xmlText, json);
-      // // const lat = json.result.address._text;
-      // // const lng = json.result.coordinate.lng._text;
-
-      console.log(stations);
-      setGeo(stations);
+      const stationCode = stationData.stationCode;
+      router.push(
+        `/result?pref=${encodeURIComponent(selectedPref)}&code=${stationCode}`
+      );
     } catch (error) {
       console.log(error);
     }
@@ -273,15 +311,10 @@ const App = () => {
             placeholder="最寄り駅を入力"
             className="block w-full rounded-md border-0 mb-3 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
             required
-            value={selectedStation || ""}
             onChange={handleChangeStation}
           />
+          <div>{}</div>
           <div className="absolute inset-y-0 right-0 flex items-center"></div>
-        </div>
-        <div>
-          {predStations.map((station, index) => (
-            <div key={index}>{station}</div>
-          ))}
         </div>
         <div className="flex h-10">
           <button
@@ -294,7 +327,7 @@ const App = () => {
           <button
             className="bg-violet-500	 font-semibold text-white rounded-md mx-1"
             style={{ flex: "4" }}
-            onClick={handleGeocoding}
+            onClick={handleSearchRoute}
           >
             検索
           </button>
@@ -303,7 +336,18 @@ const App = () => {
       <button className="bg-gray-500 text-white mx-3 my-5 w-full">
         押してね
       </button>
-      {selectedArea ? `${geo[0]} ::: ${geo[1]}` : null}
+      {predStations.map((item: Station, index: number) => (
+        <li
+          key={index}
+          className="cursor-pointer"
+          onClick={() => handleClickPredSta(item)}
+        >
+          <p>
+            駅名: {item.stationName}（{item.prefecture})
+          </p>
+        </li>
+      ))}
+
       {/* <ul>
         {titles.map((title, index) => (
           <li key={index}>{`${index + 1}: ${title} -------------- ${
