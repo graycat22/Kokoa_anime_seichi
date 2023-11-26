@@ -7,7 +7,7 @@ const Result = () => {
   const searchParams = useSearchParams();
   const [pref, code] = [searchParams.get("pref"), searchParams.get("code")];
   const [result, setResult] = useState<any[]>([]);
-
+  const router = useRouter();
   // 到着駅
 
   const transitData = [
@@ -23,7 +23,7 @@ const Result = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/search/${pref}&${code}`,
+          `http://localhost:3001/api/search/${pref}&${code}`,
           { cache: "no-store" }
         );
         const result = await res.json();
@@ -108,6 +108,7 @@ const Result = () => {
           ))}
         </tbody>
       </table>
+      <button></button>
     </div>
   );
 };

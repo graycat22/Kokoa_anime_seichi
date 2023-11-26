@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { load } from "cheerio";
 
@@ -92,7 +93,7 @@ async function getStationCode(stationName: String, prefecture: String) {
 // ルート検索関数
 async function searchRouteByEkispert(destination: String, departure: String) {
   try {
-    const apiURL = `https://api.ekispert.jp/v1/json/search/course/light?key=LE_UtqeL8hrwxSTW&from=${departure}&to=${destination}`;
+    const apiURL = `https://api.ekispert.jp/v1/json/search/course/light?key=LE_UtqeL8hrwxSTW&from=${departure}&to=${destination}&limitedExpress=false&contentsMode=sp&plane=false&shinkansen=false`;
     const res = await fetch(apiURL);
     const data = await res.json();
     const courseURL = data.ResultSet.ResourceURI;
@@ -117,15 +118,54 @@ async function getRoute(url: string) {
     const result: Object[] = [];
 
     $(`${route} table.route_list_table tbody tr`).each((index, element) => {
-      const totalRows = $("#route01 table.route_list_table tbody tr").length;
+      const totalRows = $(`${route} table.route_list_table tbody tr`).length;
       if (index === 0 || index === totalRows - 1) {
-        const times: any = $(element).find("td").eq(0).text().trim();
+        if (index === 0) {
+          const item = $(".route_list_head tbody tr");
+          // 所要時間
+          const totalDuration = $(item)
+            .eq(0)
+            .find("td")
+            .eq(1)
+            .find("div")
+            .eq(1)
+            .find("span")
+            .eq(0)
+            .text()
+            .trim();
+          // 料金
+          const totalFare = parseInt(
+            $(item)
+              .eq(1)
+              .find("td")
+              .eq(1)
+              .find(".orange_txt")
+              .eq(0)
+              .text()
+              .replace(",", "")
+              .trim()
+          );
+          // 乗換回数
+          const changes = parseInt(
+            $(item)
+              .eq(1)
+              .find("td")
+              .eq(1)
+              .find(".orange_txt")
+              .eq(1)
+              .text()
+              .replace("回", "")
+              .trim()
+          );
+          result.push({ totalDuration, totalFare, changes });
+        }
+
+        const times: String = $(element).find("td").eq(0).text().trim();
 
         const arrivalTimeMatch = times.match(/到着(\d{2}:\d{2})/);
-        const arrivalTime = arrivalTimeMatch ? arrivalTimeMatch[1] : "";
-
+        const arrivalTime = arrivalTimeMatch ? arrivalTimeMatch[1] : null;
         const departureTimeMatch = times.match(/出発(\d{2}:\d{2})/);
-        const departureTime = departureTimeMatch ? departureTimeMatch[1] : "";
+        const departureTime = departureTimeMatch ? departureTimeMatch[1] : null;
 
         const time = { arrivalTime, departureTime };
 
@@ -137,52 +177,91 @@ async function getRoute(url: string) {
           .split("\n")
           .find((text) => text.trim().length > 0);
 
-        const info = $(element)
-          .find("td")
-          .eq(2)
+        const infos: String = $(element).find("td").eq(2).text().trim();
+        const departureMatches =
+          infos.match(/出発(\d+)番線/) ||
+          infos.match(/出発(\d+のりば)/) ||
+          infos.match(/出発(\d+・\d+)番線/);
+        const departurePlatform = departureMatches ? departureMatches[1] : null;
+
+        const arrivalMatches =
+          infos.match(/到着(\d+)番線/) ||
+          infos.match(/到着(\d+・\d+のりば)/) ||
+          infos.match(/到着(\d+・\d+)番線/);
+        const arrivalPlatform = arrivalMatches ? arrivalMatches[1] : null;
+
+        const info = {
+          arrivalPlatform,
+          departurePlatform,
+        };
+
+        const fareText = $(element)
+          .find(".fare_cell")
           .text()
           .trim()
-          .split("\n")
-          .find((text) => text.trim().length > 0);
+          .match(/\d+/);
+        const fare = fareText ? parseInt(fareText[0]) : null;
 
-        evenIndexResults.push({ index, time, station, info });
+        evenIndexResults.push({ index, time, station, info, fare });
       } else if (index % 2 === 0) {
         // こっちが偶数 index
-        const times: any = $(element).find("td").eq(0).text().trim();
+        const times: String = $(element).find("td").eq(0).text().trim();
 
         const arrivalTimeMatch = times.match(/到着(\d{2}:\d{2})/);
-        const arrivalTime = arrivalTimeMatch ? arrivalTimeMatch[1] : "";
-
+        const arrivalTime = arrivalTimeMatch ? arrivalTimeMatch[1] : null;
         const departureTimeMatch = times.match(/出発(\d{2}:\d{2})/);
-        const departureTime = departureTimeMatch ? departureTimeMatch[1] : "";
+        const departureTime = departureTimeMatch ? departureTimeMatch[1] : null;
 
         const time = { arrivalTime, departureTime };
 
-        const station = $(element)
-          .find("td")
-          .eq(2)
+        const station =
+          $(element)
+            .find("td")
+            .eq(2)
+            .text()
+            .trim()
+            .split("\n")
+            .find((text) => text.trim().length > 0) || null;
+
+        const infos: String = $(element).find("td").eq(3).text().trim();
+        const departureMatches =
+          infos.match(/出発(\d+)番線/) ||
+          infos.match(/出発(\d+のりば)/) ||
+          infos.match(/出発(\d+・\d+)番線/);
+        const departurePlatform = departureMatches ? departureMatches[1] : null;
+
+        const arrivalMatches =
+          infos.match(/到着(\d+)番線/) ||
+          infos.match(/到着(\d+・\d+のりば)/) ||
+          infos.match(/到着(\d+・\d+)番線/);
+        const arrivalPlatform = arrivalMatches ? arrivalMatches[1] : null;
+
+        const info = {
+          arrivalPlatform,
+          departurePlatform,
+        };
+
+        const fareText = $(element)
+          .find(".fare_cell")
           .text()
           .trim()
-          .split("\n")
-          .find((text) => text.trim().length > 0);
-        const info = $(element)
-          .find("td")
-          .eq(3)
-          .text()
-          .trim()
-          .split("\n")
-          .find((text) => text.trim().length > 0);
-        evenIndexResults.push({ index, time, station, info });
+          .match(/\d+/);
+        const fare = fareText ? parseInt(fareText[0]) : null;
+
+        evenIndexResults.push({ index, time, station, info, fare });
       } else {
         // 奇数 index
-        const time = $(element).find("td").eq(0).text().trim();
-        const station = $(element)
-          .find("td")
-          .eq(1)
-          .text()
-          .trim()
-          .split("\n")
-          .find((text) => text.trim().length > 0);
+        const times = $(element).find("td").eq(0).text().trim();
+        const regex = /(\d+)分\/?(\d*)駅?/;
+        const matches = times.match(regex);
+        const duration = matches ? parseInt(matches[1]) : null;
+        const stations =
+          matches && matches[2] !== "" ? parseInt(matches[2]) : null;
+        const time = {
+          duration,
+          stations,
+        };
+
         const info = $(element)
           .find("td")
           .eq(2)
@@ -190,7 +269,7 @@ async function getRoute(url: string) {
           .trim()
           .split("\n")
           .find((text) => text.trim().length > 0);
-        oddIndexResults.push({ index, time, station, info });
+        oddIndexResults.push({ index, time, info });
       }
     });
 
@@ -207,7 +286,6 @@ async function getRoute(url: string) {
       }
     }
     console.log(`${i}個別リザルト`, result);
-
     results.push({ [`course${i}`]: result });
   }
 
