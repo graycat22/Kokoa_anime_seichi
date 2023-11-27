@@ -162,9 +162,13 @@ async function getRoute(url: string) {
 
         const times: String = $(element).find("td").eq(0).text().trim();
 
-        const arrivalTimeMatch = times.match(/到着(\d{2}:\d{2})/);
+        const arrivalTimeMatch =
+          times.match(/到着\[(\d{2}:\d{2})\]/) ||
+          times.match(/到着(\d{2}:\d{2})/);
         const arrivalTime = arrivalTimeMatch ? arrivalTimeMatch[1] : null;
-        const departureTimeMatch = times.match(/出発(\d{2}:\d{2})/);
+        const departureTimeMatch =
+          times.match(/出発\[(\d{2}:\d{2})\]/) ||
+          times.match(/出発(\d{2}:\d{2})/);
         const departureTime = departureTimeMatch ? departureTimeMatch[1] : null;
 
         const time = { arrivalTime, departureTime };
@@ -198,18 +202,23 @@ async function getRoute(url: string) {
         const fareText = $(element)
           .find(".fare_cell")
           .text()
+          .replace(",", "")
           .trim()
           .match(/\d+/);
         const fare = fareText ? parseInt(fareText[0]) : null;
 
         evenIndexResults.push({ index, time, station, info, fare });
       } else if (index % 2 === 0) {
-        // こっちが偶数 index
-        const times: String = $(element).find("td").eq(0).text().trim();
+        // 偶数 index
+        const times: string = $(element).find("td").eq(0).text().trim();
 
-        const arrivalTimeMatch = times.match(/到着(\d{2}:\d{2})/);
+        const arrivalTimeMatch =
+          times.match(/到着\[(\d{2}:\d{2})\]/) ||
+          times.match(/到着(\d{2}:\d{2})/);
         const arrivalTime = arrivalTimeMatch ? arrivalTimeMatch[1] : null;
-        const departureTimeMatch = times.match(/出発(\d{2}:\d{2})/);
+        const departureTimeMatch =
+          times.match(/出発\[(\d{2}:\d{2})\]/) ||
+          times.match(/出発(\d{2}:\d{2})/);
         const departureTime = departureTimeMatch ? departureTimeMatch[1] : null;
 
         const time = { arrivalTime, departureTime };
@@ -244,6 +253,7 @@ async function getRoute(url: string) {
         const fareText = $(element)
           .find(".fare_cell")
           .text()
+          .replace(",", "")
           .trim()
           .match(/\d+/);
         const fare = fareText ? parseInt(fareText[0]) : null;

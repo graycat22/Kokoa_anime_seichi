@@ -3,112 +3,22 @@
 import { useState } from "react";
 import { animeData } from "./library/anime-data";
 import { useRouter } from "next/navigation";
+import { areas } from "./library/area";
 
 const App = () => {
   interface Station {
-    stationCode: Number;
-    stationName: String;
-    prefecture: String;
+    stationCode: number;
+    stationName: string;
+    prefecture: string;
   }
   const router = useRouter();
-
   const [selectedArea, setSelectedArea] = useState(""); // 聖地のエリア
   const [selectedWork, setSelectedWork] = useState(""); // 選択された作品
   const [stationData, setStationData] = useState<Station | null>(null); // 最寄り駅
   const [predStations, setPredStations] = useState<Station[]>([]); // 駅の予測
   const [selectedPref, setSelectedPref] = useState<string>(""); // API 代入用
-
-  // const [titles, setTitles] = useState([]); // スクレイプしたアニメタイトルを格納
-  // const [prefectures, setPrefectures] = useState([]); // スクレイプした都道府県を格納
-
+  const [inputValue, setInputValue] = useState<string>(""); // ユーザの最寄り駅インプット
   const [animeTitles, setAnimeTitles] = useState<string[]>([]); // 選択した都道府県に存在するアニメの聖地
-
-  // ここでスクレイピングする。
-  // わざわざファイル分割しても醜くなるだけ。
-  // const handleFetchData = async () => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3300`);
-  //     const data = await response.json();
-
-  //     console.log(data);
-
-  //     // アニメタイトルのみの配列を取得
-  //     const titles = data.formattedData.map(
-  //       (anime: { title: any }) => anime.title
-  //     );
-  //     //アニメの聖地のある都道府県の配列を取得
-  //     const prefectures = data.formattedData.map(
-  //       (anime: { prefecture: any }) => anime.prefecture
-  //     );
-
-  //     setTitles(titles);
-  //     setPrefectures(prefectures);
-  //   } catch (error) {
-  //     console.error("エラーが発生しました:", error);
-  //   }
-  // };
-
-  ////
-
-  const areas = [
-    {
-      group: "北海道・東北",
-      prefectures: [
-        "北海道",
-        "青森県",
-        "岩手県",
-        "宮城県",
-        "秋田県",
-        "山形県",
-        "福島県",
-      ],
-    },
-    {
-      group: "関東",
-      prefectures: [
-        "東京都",
-        "神奈川県",
-        "埼玉県",
-        "千葉県",
-        "茨城県",
-        "栃木県",
-        "群馬県",
-      ],
-    },
-    {
-      group: "中部",
-      prefectures: ["愛知県", "岐阜県", "静岡県", "三重県", "長野県"],
-    },
-    {
-      group: "近畿",
-      prefectures: [
-        "大阪府",
-        "兵庫県",
-        "京都府",
-        "滋賀県",
-        "奈良県",
-        "和歌山県",
-      ],
-    },
-    {
-      group: "中国",
-      prefectures: ["広島県", "岡山県", "鳥取県", "島根県", "山口県"],
-    },
-    { group: "四国", prefectures: ["香川県", "徳島県", "愛媛県", "高知県"] },
-    {
-      group: "九州・沖縄",
-      prefectures: [
-        "福岡県",
-        "佐賀県",
-        "長崎県",
-        "大分県",
-        "熊本県",
-        "宮崎県",
-        "鹿児島県",
-        "沖縄県",
-      ],
-    },
-  ];
 
   // それぞれエリア・作品・最寄り駅が変更された際に、seleced●●●●に再代入されるハンドル
   const handleChangeArea = (e: { target: any }) => {
@@ -135,25 +45,13 @@ const App = () => {
     setSelectedPref(pref!);
   };
 
-  // 駅検索メソッド
-  // const handleChangeStation = (e: { target: any }) => {
-  //   const stationData = e.target.value || null;
-  //   setStationData(stationData);
-
-  //   // 駅の予測
-  //   const predictedStations = jrStations
-  //     .filter(
-  //       (station) =>
-  //         station.kana.startsWith(stationData) ||
-  //         station.name.startsWith(stationData)
-  //     )
-  //     .map((item) => item.name);
-  //   setPredStations(predictedStations);
-  // };
-
   // 駅の予測
-  const handleChangeStation = async (e: { target: any }) => {
+  const handleChangeStation = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const userInput = e.target.value;
+    setStationData(null);
+    setInputValue(userInput);
     const filteredInput =
       userInput
         .match(/[ぁ-んァ-ン一-龠]/g)
@@ -172,7 +70,6 @@ const App = () => {
       if (!station_Data) {
         return;
       }
-
       if (!Array.isArray(station_Data)) {
         station_Data = [station_Data];
       }
@@ -191,9 +88,15 @@ const App = () => {
   const handleClickPredSta = (stationData: Station) => {
     // 最寄り駅の設定
     setStationData(stationData);
+    setInputValue(stationData.stationName);
   };
 
   console.log("stationData", stationData);
+
+  const handlePressX = () => {
+    setInputValue("");
+    setStationData(null);
+  };
 
   const handleClearInfo = () => {
     setSelectedArea("");
@@ -251,7 +154,7 @@ const App = () => {
             name="area"
             value={selectedArea}
             onChange={handleChangeArea}
-            className="block w-full rounded-md border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
           >
             <option value="" disabled>
               地域を選択
@@ -275,7 +178,7 @@ const App = () => {
         >
           作品選択
         </label>
-        <div className="relative mt-2 rounded-md shadow-sm">
+        <div className="relative mt-2 rounded-xl shadow-sm">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <span className="text-gray-500 sm:text-sm pl-1">:::</span>
           </div>
@@ -284,7 +187,7 @@ const App = () => {
             name="work"
             value={selectedWork}
             onChange={handleChangeWork}
-            className="block w-full rounded-md border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
           >
             <option value="" disabled>
               作品を選択
@@ -309,52 +212,65 @@ const App = () => {
           <input
             type="text"
             placeholder="最寄り駅を入力"
-            className="block w-full rounded-md border-0 mb-3 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 mb-1 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
             required
+            value={inputValue}
             onChange={handleChangeStation}
           />
-          <div>{}</div>
-          <div className="absolute inset-y-0 right-0 flex items-center"></div>
-        </div>
-        <div className="flex h-10">
-          <button
-            className="bg-gray-400 font-semibold text-white rounded-md mx-1"
-            style={{ flex: "1" }}
-            onClick={handleClearInfo}
+          <ul
+            className={`${
+              inputValue === "" || stationData !== null ? "hidden" : "block"
+            } absolute z-10 bg-white shadow-md overflow-y-auto h-96 w-full rounded-3xl`}
           >
-            クリア
-          </button>
+            {predStations.map((item: Station, index: number) => (
+              <li
+                key={index}
+                className="cursor-pointer border-b border-gray-200 hover:bg-gray-100 py-2 px-4"
+                onClick={() => handleClickPredSta(item)}
+              >
+                <p className="text-gray-900">
+                  駅名: {item.stationName}（{item.prefecture}）
+                </p>
+              </li>
+            ))}
+          </ul>
           <button
-            className="bg-violet-500	 font-semibold text-white rounded-md mx-1"
-            style={{ flex: "4" }}
-            onClick={handleSearchRoute}
+            className="absolute inset-y-1.5 right-2 flex text-gray-400 hover:text-violet-500 focus:text-violet-760 button-container"
+            onClick={handlePressX}
           >
-            検索
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.4"
+              stroke="currentColor"
+              className="w-6 h-6 svg-icon"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="miter"
+                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
           </button>
         </div>
       </div>
-      <button className="bg-gray-500 text-white mx-3 my-5 w-full">
-        押してね
-      </button>
-      {predStations.map((item: Station, index: number) => (
-        <li
-          key={index}
-          className="cursor-pointer"
-          onClick={() => handleClickPredSta(item)}
+      <div className="flex mt-5 h-10">
+        <button
+          className="bg-gray-400 font-semibold text-white rounded-md mx-1"
+          style={{ flex: "1" }}
+          onClick={handleClearInfo}
         >
-          <p>
-            駅名: {item.stationName}（{item.prefecture})
-          </p>
-        </li>
-      ))}
-
-      {/* <ul>
-        {titles.map((title, index) => (
-          <li key={index}>{`${index + 1}: ${title} -------------- ${
-            prefectures[index]
-          }`}</li>
-        ))}
-      </ul> */}
+          クリア
+        </button>
+        <button
+          className="bg-violet-500 font-semibold text-white rounded-md mx-1"
+          style={{ flex: "4" }}
+          onClick={handleSearchRoute}
+        >
+          検索
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,30 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 const Result = () => {
   const searchParams = useSearchParams();
   const [pref, code] = [searchParams.get("pref"), searchParams.get("code")];
   const [result, setResult] = useState<any[]>([]);
   const router = useRouter();
-  // 到着駅
-
-  const transitData = [
-    { time: "08:00", station: "Station A", platform: "Platform 1" },
-    { time: "08:30", station: "Station B", platform: "Platform 2" },
-    { time: "09:00", station: "Station C", platform: "Platform 3" },
-    { time: "09:30", station: "Station D", platform: "Platform 4" },
-    // 他の行も同様に追加
-  ];
 
   // 初回読み込み(prefとcodeが変化)時に発火
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3001/api/search/${pref}&${code}`,
-          { cache: "no-store" }
+          `http://localhost:3000/api/search/${pref}&${code}`
         );
         const result = await res.json();
         setResult(result);
@@ -33,82 +25,145 @@ const Result = () => {
         console.error("Error fetching data:", error);
       }
     };
-    fetchData();
+    const myPromise = fetchData();
+    toast.promise(
+      myPromise,
+      {
+        loading: "ロード中…",
+        success: "成功！",
+        error: "失敗しましたTT",
+      },
+      {
+        icon: "🚃",
+        style: { background: "rgb(221 214 254)" },
+        success: { duration: 1500 },
+      }
+    );
   }, [pref, code]);
 
-  const handleRoute = () => {
-    console.log("course2:", result[1]);
+  const returnTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
-  // const course1 = result[0].course1;
-  // const course2 = result[1].course2;
-  // const course3 = result[2].course3;
-  // const course4 = result[3].course4;
-  // console.log(course1);
-
   return (
-    <div>
-      <button className="bg-red-400" onClick={handleRoute}>
-        ああ
-      </button>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Time
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Station
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Platform
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {transitData.map((row, index) => (
-            <React.Fragment key={index}>
-              {/* 奇数行 */}
-              <tr className={(index + 1) % 2 !== 0 ? "bg-gray-50" : ""}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {row.time}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {row.station}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {row.platform}
-                </td>
-              </tr>
-              {/* 偶数行 */}
-              {(index + 1) % 2 === 0 && (
-                <tr className="bg-white">
-                  <td className="px-6 py-4" colSpan={3}>
-                    {/* 電車のアイコンなどを表示する部分 */}
-                    <div className="flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-gray-400"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+    // result[{${i}}]として i < 4; i++ でループ
+    <div className="mx-1">
+      <Toaster />
+      {result.length > 0 &&
+        [1, 2, 3, 4].map((i) => (
+          <section
+            key={i}
+            id="section"
+            className="mt-2 mb-8 rounded-xl overflow-hidden bg-gray-200"
+          >
+            <table className="w-full divide-y divide-gray-200 rounded-lg">
+              {result[i - 1][`course${i}`].map((row: any, index: number) => (
+                <tbody
+                  key={index}
+                  className="bg-white divide-y divide-gray-200"
+                >
+                  {index === 0 ? (
+                    <tr className="relative w-full h-12 border-t bg-gray-200">
+                      <td className="absolute py-3 ml-2 mt-1 text-left text-sm font-medium text-gray-500 tracking-wider">
+                        ルート {i}
+                      </td>
+                      <td className="absolute right-3 mt-5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                        所要時間: {row.totalDuration}, &nbsp; 片道:&nbsp;
+                        {row.totalFare} 円, &nbsp; 乗換: {row.changes} 回
+                      </td>
+                    </tr>
+                  ) : index % 2 !== 0 ? (
+                    // 色あり奇数行(index === 偶数)
+                    <tr className="w-2/12 bg-violet-200 rounded-xl overflow-hidden">
+                      <td className="h-12 whitespace-nowrap text-xs text-center font-normal text-gray-500">
+                        {row.time.arrivalTime && (
+                          <>
+                            到着 {row.time.arrivalTime}
+                            <br />
+                          </>
+                        )}
+                        {row.time.departureTime && (
+                          <>出発 {row.time.departureTime}</>
+                        )}
+                      </td>
+                      <td className="w-5/12 h-12 whitespace-normal text-bg text-center text-gray-500 border-l-4 border-gray-400">
+                        {row.station}
+                      </td>
+                      <td className="w-4/12 h-12 whitespace-nowrap text-xs text-gray-500">
+                        {row.info.arrivalPlatform && (
+                          <span className="pl-4">
+                            到着 {row.info.arrivalPlatform} 番線
+                            <br />
+                          </span>
+                        )}
+                        {row.info.departurePlatform && (
+                          <span className="pl-4">
+                            出発 {row.info.departurePlatform} 番線
+                          </span>
+                        )}
+                      </td>
+                      <td
+                        className={`relative w-1/12 h-12 whitespace-normal text-xs text-left align-bottom text-gray-500 ${
+                          row.fare ? "" : "border-gray-300 border-l-2"
+                        }`}
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 1a1 1 0 0 1 .707.293l8 8a1 1 0 0 1 0 1.414l-8 8a1 1 0 0 1-1.414-1.414L16.586 10 9.293 2.707a1 1 0 0 1 0-1.414A1 1 0 0 1 10 1zm0 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"
-                        />
-                      </svg>
-                      <span className="ml-2 text-sm font-medium text-gray-900">
-                        {row.time} - {row.station}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
-      <button></button>
+                        {row.fare && row.fare.toString().length === 4 ? (
+                          <span className="absolute -ml-5 -mt-4">
+                            &yen;{row.fare}
+                          </span>
+                        ) : row.fare && row.fare.toString().length === 3 ? (
+                          <span className="absolute -ml-4 -mt-4">
+                            &yen;{row.fare}
+                          </span>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ) : (
+                    // 奇数行(index === 偶数)
+                    <tr>
+                      <td className="h-16 whitespace-normal text-xs text-center font-medium text-gray-500">
+                        {row.time.duration}分/{row.time.stations}駅
+                      </td>
+                      <td className="h-16 whitespace-normal text-xs text-center text-gray-500">
+                        {row.info}
+                      </td>
+                      <td className="h-16 whitespace-normal text-sm text-center text-gray-500">
+                        {row.changes}
+                      </td>
+                      <td className="h-16 whitespace-normal text-sm text-center text-gray-500 border-gray-300 border-l-2"></td>
+                    </tr>
+                  )}
+                </tbody>
+              ))}
+            </table>
+          </section>
+        ))}
+      <button
+        className="fixed z-20 bottom-4 right-4 button-020"
+        aria-label="scrollTop"
+        onClick={returnTop}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+        >
+          <path
+            fill="#ffffff"
+            d="m12.9 5.1 10.7 10.7c.5.5.5 1.4 0 1.9l-1.2 1.2c-.5.5-1.3.5-1.9 0L12 10.4l-8.5 8.5c-.5.5-1.3.5-1.9 0L.4 17.7c-.5-.5-.5-1.4 0-1.9L11.1 5.1c.5-.5 1.3-.5 1.8 0z"
+          />
+        </svg>
+      </button>
+      <button
+        id="top-page-button"
+        className="fixed z-20 bottom-4 left-4 py-2 px-4 text-white transition-all duration-100 rounded-2xl"
+      >
+        <Link href="/">聖地巡礼地を探す</Link>
+      </button>
     </div>
   );
 };
