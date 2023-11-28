@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -9,14 +9,13 @@ const Result = () => {
   const searchParams = useSearchParams();
   const [pref, code] = [searchParams.get("pref"), searchParams.get("code")];
   const [result, setResult] = useState<any[]>([]);
-  const router = useRouter();
 
   // 初回読み込み(prefとcodeが変化)時に発火
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/search/${pref}&${code}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/search/${pref}&${code}`
         );
         const result = await res.json();
         setResult(result);
@@ -31,7 +30,7 @@ const Result = () => {
       {
         loading: "ロード中…",
         success: "成功！",
-        error: "失敗しましたTT",
+        error: "失敗しました T T",
       },
       {
         icon: "🚃",
@@ -50,7 +49,7 @@ const Result = () => {
 
   return (
     // result[{${i}}]として i < 4; i++ でループ
-    <div className="mx-1">
+    <div className="mx-1 mt-4 mb-16">
       <Toaster />
       {result.length > 0 &&
         [1, 2, 3, 4].map((i) => (
@@ -160,11 +159,15 @@ const Result = () => {
       </button>
       <button
         id="top-page-button"
-        className="fixed z-20 bottom-4 left-4 py-2 px-4 text-white transition-all duration-100 rounded-2xl"
+        className="fixed z-20 bottom-4 left-4 py-2 text-white transition-all duration-100 rounded-2xl"
       >
-        <Link href="/">聖地巡礼地を探す</Link>
+        <Link href="/" className="py-3 px-6 rounded-2xl">
+          聖地巡礼地を探す
+        </Link>
       </button>
-      <p className="p-3">Powered by HeartRails...</p>
+      {result.length > 0 || (
+        <p className="pl-3 -mt-4 text-sm">Powered by HeartRails...</p>
+      )}
     </div>
   );
 };

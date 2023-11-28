@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { animeData } from "./library/anime-data";
 import { useRouter } from "next/navigation";
 import { areas } from "./library/area";
+import toast, { Toaster } from "react-hot-toast";
 
 const App = () => {
   interface Station {
@@ -110,10 +111,23 @@ const App = () => {
   const handleSearchRoute = async () => {
     try {
       if (!selectedArea || !selectedWork || !stationData) {
-        // トースト通知
-        alert("おい");
+        let errorMessage = "";
+        if (!selectedArea) {
+          errorMessage += "聖地と";
+        }
+        if (!selectedWork) {
+          errorMessage += "作品と";
+        }
+        if (!stationData) {
+          errorMessage += "出発駅と";
+        }
+        errorMessage = errorMessage.slice(0, -1);
+        if (errorMessage) {
+          toast.error(`${errorMessage}を選択してください`);
+        }
         return;
       }
+
       const stationCode = stationData.stationCode;
       router.push(
         `/result?pref=${encodeURIComponent(selectedPref)}&code=${stationCode}`
@@ -138,6 +152,7 @@ const App = () => {
 
   return (
     <div className="App min-h-screen bg-violet-200 px-5">
+      <Toaster />
       <div className="flex justify-center items-center">
         <h1 className="leading-loose tracking-wider py-10 text-xl antialiased">
           聖地行き方検索ツール
