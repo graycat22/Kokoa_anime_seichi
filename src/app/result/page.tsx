@@ -9,9 +9,11 @@ const Result = () => {
   const searchParams = useSearchParams();
   const [pref, code] = [searchParams.get("pref"), searchParams.get("code")];
   const [result, setResult] = useState<any[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false); // ページ遷移アニメーション用
 
   // 初回読み込み(prefとcodeが変化)時に発火
   useEffect(() => {
+    setIsLoaded(true);
     const fetchData = async () => {
       try {
         const res = await fetch(
@@ -49,7 +51,11 @@ const Result = () => {
 
   return (
     // result[{${i}}]として i < 4; i++ でループ
-    <div className="mx-1 mt-4 mb-16">
+    <div
+      className={`mx-1 mt-4 mb-16 transition-opacity duration-1500 ${
+        isLoaded ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Toaster />
       {result.length > 0 &&
         [1, 2, 3, 4].map((i) => (

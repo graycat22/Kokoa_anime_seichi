@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { animeData } from "./library/anime-data";
 import { useRouter } from "next/navigation";
 import { areas } from "./library/area";
@@ -20,6 +20,41 @@ const App = () => {
   const [selectedPref, setSelectedPref] = useState<string>(""); // API 代入用
   const [inputValue, setInputValue] = useState<string>(""); // ユーザの最寄り駅インプット
   const [animeTitles, setAnimeTitles] = useState<string[]>([]); // 選択した都道府県に存在するアニメの聖地
+  const [isLoaded, setIsLoaded] = useState(false); // ローディングアニメーション用
+  const emoji = [
+    "🗻",
+    "🌱",
+    "🚃",
+    "🐠",
+    "🎏",
+    "🏮",
+    "🎐",
+    "🚠",
+    "⛩",
+    "🛤",
+    "🕋",
+    "⛺️",
+    "🗾",
+    "🎑",
+    "🏞",
+    "🌅",
+    "🌃",
+    "🏙",
+    "🌆",
+    "🌄",
+    "🌁",
+    "🌇",
+    "🌠",
+    "🎆",
+    "🌠",
+    "🌉",
+    "🎇",
+    "🌌",
+  ];
+
+  useEffect(() => {
+    setIsLoaded(true); // ページがロードされた後にアニメーションを適用するために状態を更新
+  }, []);
 
   // それぞれエリア・作品・最寄り駅が変更された際に、seleced●●●●に再代入されるハンドル
   const handleChangeArea = (e: { target: any }) => {
@@ -95,6 +130,9 @@ const App = () => {
   console.log("stationData", stationData);
 
   const handlePressX = () => {
+    if (inputValue) {
+      toast("出発駅を消しました", { duration: 800 });
+    }
     setInputValue("");
     setStationData(null);
   };
@@ -105,8 +143,10 @@ const App = () => {
     setStationData(null);
     setPredStations([]);
     setAnimeTitles([]);
+    setInputValue("");
+    setStationData(null);
+    toast("入力をクリアしました", { duration: 800 });
   };
-
   // 検索しルート取得。CORS 回避のため、プロキシサーバー経由で外部 API にリクエスト
   const handleSearchRoute = async () => {
     try {
@@ -127,7 +167,7 @@ const App = () => {
         }
         return;
       }
-
+      toast("検索を開始します", { icon: "😶‍🌫️", duration: 800 });
       const stationCode = stationData.stationCode;
       router.push(
         `/result?pref=${encodeURIComponent(selectedPref)}&code=${stationCode}`
@@ -151,7 +191,11 @@ const App = () => {
   // };
 
   return (
-    <div className="App min-h-screen bg-violet-200 px-5">
+    <div
+      className={`App min-h-screen bg-violet-200 px-5 transition-opacity duration-500 ${
+        isLoaded ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Toaster />
       <div className="flex justify-center items-center">
         <h1 className="leading-loose tracking-wider py-10 text-xl antialiased">
@@ -165,7 +209,7 @@ const App = () => {
         >
           エリア選択
         </label>
-        <div className="relative mt-2 rounded-md shadow-sm">
+        <div className="relative mt-2 mb-3 rounded-md shadow-sm">
           {/* <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <span className="text-gray-500 sm:text-sm pl-1">∴</span>
           </div> */}
@@ -173,7 +217,7 @@ const App = () => {
             name="area"
             value={selectedArea}
             onChange={handleChangeArea}
-            className="block w-full rounded-xl border-0 h-12 mb-3 py-1.5 pl-9 pr-20 text-gray-800 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 h-12 py-1.5 pl-9 pr-20 text-gray-800 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none bg-white"
           >
             <option value="" disabled>
               地域を選択
@@ -197,16 +241,15 @@ const App = () => {
         >
           作品選択
         </label>
-        <div className="relative mt-2 rounded-xl shadow-sm">
+        <div className="relative mt-2 mb-3 rounded-xl shadow-sm">
           {/* <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <span className="text-gray-500 sm:text-sm pl-1">:::</span>
           </div> */}
           <select
-            id="work"
             name="work"
             value={selectedWork}
             onChange={handleChangeWork}
-            className="block w-full rounded-xl border-0 h-12 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 h-12 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none bg-white"
           >
             <option value="" disabled>
               作品を選択
@@ -247,9 +290,10 @@ const App = () => {
                 className="cursor-pointer border-b border-gray-200 hover:bg-gray-100 py-2 px-4"
                 onClick={() => handleClickPredSta(item)}
               >
-                <p className="text-gray-900">
-                  駅名: {item.stationName}（{item.prefecture}）
-                </p>
+                <span>{emoji[Math.floor(Math.random() * emoji.length)]}</span>
+                <span className="text-gray-900 pl-3">
+                  {item.stationName}（{item.prefecture}）
+                </span>
               </li>
             ))}
           </ul>
