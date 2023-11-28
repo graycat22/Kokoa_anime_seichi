@@ -164,6 +164,7 @@ const Result = () => {
       >
         <Link href="/">聖地巡礼地を探す</Link>
       </button>
+      <p className="p-3">Powered by HeartRails...</p>
     </div>
   );
 };

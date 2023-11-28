@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Anime Touring Route",
   description: "アニメの聖地巡礼へようこそ。",
+  icons: {
+    icon: ["/favicon.ico?v=4"],
+  },
 };
 
 export default function RootLayout({

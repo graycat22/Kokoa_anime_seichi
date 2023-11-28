@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { animeData } from "./library/anime-data";
 import { useRouter } from "next/navigation";
 import { areas } from "./library/area";
@@ -137,8 +137,12 @@ const App = () => {
   // };
 
   return (
-    <div className="App min-h-screen bg-gray-300">
-      <h1>聖地行き方検索ツール</h1>
+    <div className="App min-h-screen bg-violet-200 px-5">
+      <div className="flex justify-center items-center">
+        <h1 className="leading-loose tracking-wider py-10 text-xl antialiased">
+          聖地行き方検索ツール
+        </h1>
+      </div>
       <div id="areas">
         <label
           htmlFor="area"
@@ -154,7 +158,7 @@ const App = () => {
             name="area"
             value={selectedArea}
             onChange={handleChangeArea}
-            className="block w-full rounded-xl border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 h-12 mb-3 py-1.5 pl-9 pr-20 text-gray-800 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
           >
             <option value="" disabled>
               地域を選択
@@ -187,7 +191,7 @@ const App = () => {
             name="work"
             value={selectedWork}
             onChange={handleChangeWork}
-            className="block w-full rounded-xl border-0 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 h-12 mb-3 py-1.5 pl-9 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
           >
             <option value="" disabled>
               作品を選択
@@ -212,7 +216,7 @@ const App = () => {
           <input
             type="text"
             placeholder="最寄り駅を入力"
-            className="block w-full rounded-xl border-0 mb-1 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 h-12 mb-1 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
             required
             value={inputValue}
             onChange={handleChangeStation}
@@ -235,7 +239,7 @@ const App = () => {
             ))}
           </ul>
           <button
-            className="absolute inset-y-1.5 right-2 flex text-gray-400 hover:text-violet-500 focus:text-violet-760 button-container"
+            className="absolute inset-y-1.5 right-2 top-3 flex text-gray-400 hover:text-violet-500 focus:text-violet-760 button-container"
             onClick={handlePressX}
           >
             <svg
