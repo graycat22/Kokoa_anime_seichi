@@ -6,6 +6,14 @@
   transform: rotate(180deg); /* ホバー時に180度回転するアニメーション */
 }
 
+.button-click-animation {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.button-click-animation:active {
+  transform: translateY(3px); /* ボタンを押した時の下方向の移動量を指定 */
+}
+
 .svg-icon {
   width: 24px;
   height: 24px;

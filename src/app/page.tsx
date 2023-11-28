@@ -123,7 +123,7 @@ const App = () => {
         }
         errorMessage = errorMessage.slice(0, -1);
         if (errorMessage) {
-          toast.error(`${errorMessage}を選択してください`);
+          toast.error(`${errorMessage}を選択してください`, { duration: 1500 });
         }
         return;
       }
@@ -166,9 +166,9 @@ const App = () => {
           エリア選択
         </label>
         <div className="relative mt-2 rounded-md shadow-sm">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          {/* <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <span className="text-gray-500 sm:text-sm pl-1">∴</span>
-          </div>
+          </div> */}
           <select
             name="area"
             value={selectedArea}
@@ -198,9 +198,9 @@ const App = () => {
           作品選択
         </label>
         <div className="relative mt-2 rounded-xl shadow-sm">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          {/* <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <span className="text-gray-500 sm:text-sm pl-1">:::</span>
-          </div>
+          </div> */}
           <select
             id="work"
             name="work"
@@ -276,14 +276,14 @@ const App = () => {
       </div>
       <div className="flex mt-5 h-10">
         <button
-          className="bg-gray-400 font-semibold text-white rounded-md mx-1"
+          className="button-click-animation bg-gray-400 font-semibold text-white rounded-md mx-1 hover:bg-gray-600 active:bg-gray-300"
           style={{ flex: "1" }}
           onClick={handleClearInfo}
         >
           クリア
         </button>
         <button
-          className="bg-violet-500 font-semibold text-white rounded-md mx-1"
+          className="button-click-animation bg-violet-500 font-semibold text-white rounded-md mx-1 hover:bg-violet-700 active:bg-violet-300"
           style={{ flex: "4" }}
           onClick={handleSearchRoute}
         >
