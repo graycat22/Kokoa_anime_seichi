@@ -29,8 +29,8 @@ const Result = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/search/${pref}&${code}`
-        );
+          `http://localhost:3000/api/search/${pref}&${code}`
+        ); //${process.env.NEXT_PUBLIC_API_URL}
         const result = await res.json();
         setResult(result);
         console.log("ルートのデータ", result);
@@ -47,8 +47,7 @@ const Result = () => {
         error: "失敗しました T T",
       },
       {
-        icon: "🚃",
-        style: { background: "rgb(221 214 254)" },
+        style: { background: "rgb(221 214 254)", marginTop: "45.3px" },
         success: { duration: 1500 },
       }
     );
@@ -198,7 +197,15 @@ const Result = () => {
             </section>
           ))}
         <button
-          className="fixed z-20 bottom-4 right-4 lg:right-40 button-020"
+          id="top-page-button"
+          className="button-click-animation fixed z-20 bottom-4 left-4 lg:left-40 py-2 text-white transition-all duration-100 rounded-2xl"
+        >
+          <Link href="/" className="py-3 px-6 rounded-2xl">
+            聖地巡礼地を探す
+          </Link>
+        </button>
+        <button
+          className="button-click-animation fixed z-20 bottom-4 right-4 lg:right-40 button-020"
           aria-label="scrollTop"
           onClick={returnTop}
         >
@@ -214,16 +221,8 @@ const Result = () => {
             />
           </svg>
         </button>
-        <button
-          id="top-page-button"
-          className="fixed z-20 bottom-4 left-4 lg:left-40 py-2 text-white transition-all duration-100 rounded-2xl"
-        >
-          <Link href="/" className="py-3 px-6 rounded-2xl">
-            聖地巡礼地を探す
-          </Link>
-        </button>
         {result.length > 0 || (
-          <p className="pl-3 text-sm">Powered by HeartRails...</p>
+          <p className="pl-3 pt-4 text-sm">Powered by HeartRails...</p>
         )}
       </div>
       {result.length > 0 ? (

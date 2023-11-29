@@ -272,7 +272,7 @@ const App = () => {
             ))}
           </ul>
           <button
-            className="absolute inset-y-1.5 right-2 top-3 flex text-gray-400 hover:text-violet-500 focus:text-violet-760 button-container"
+            className="absolute inset-y-1.5 right-2 top-3 flex text-gray-400 hover:text-violet-500 focus:text-violet-760 button-container button-click-animation"
             onClick={handlePressX}
           >
             <svg
