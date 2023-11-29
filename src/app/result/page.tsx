@@ -29,8 +29,8 @@ const Result = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/search/${pref}&${code}`
-        );
+          `http://localhost:3000/api/search/${pref}&${code}`
+        ); // ${process.env.NEXT_PUBLIC_API_URL}
         const result = await res.json();
         setResult(result);
         console.log("ルートのデータ", result);
@@ -123,7 +123,7 @@ const Result = () => {
                             <td className="absolute py-3 ml-2 mt-1 text-left text-sm font-medium text-gray-800 tracking-wider">
                               ルート {i}
                             </td>
-                            <td className="absolute right-3 mt-5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                            <td className="absolute right-0.5 mt-5 text-left text-xs font-medium text-gray-500 tracking-wide">
                               所要時間: {row.totalDuration}, &nbsp; 片道:&nbsp;
                               {row.totalFare} 円, &nbsp; 乗換: {row.changes} 回
                             </td>
