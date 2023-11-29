@@ -253,7 +253,9 @@ const App = () => {
           <ul
             className={`${
               inputValue === "" || stationData !== null ? "hidden" : "block"
-            } absolute z-10 bg-white shadow-md overflow-y-auto h-96 w-full rounded-3xl`}
+            } absolute z-10 bg-white shadow-md overflow-y-auto w-full rounded-3xl ${
+              predStations.length <= 6 ? "" : "h-80"
+            }`}
           >
             {predStations.map((item: Station, index: number) => (
               <li

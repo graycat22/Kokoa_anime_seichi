@@ -17,8 +17,8 @@ const Result = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/search/${pref}&${code}`
-        );
+          `http://localhost:3000/api/search/${pref}&${code}`
+        ); // ${process.env.NEXT_PUBLIC_API_URL}
         const result = await res.json();
         setResult(result);
         console.log("ルートのデータ", result);
@@ -52,7 +52,7 @@ const Result = () => {
   return (
     // result[{${i}}]として i < 4; i++ でループ
     <div
-      className={`mx-2 mt-4 mb-16 transition-opacity duration-1500 ${
+      className={`mx-auto mt-4 mb-16 px-2 max-w-screen-lg lg:flex lg:flex-wrap lg:w-full transition-opacity duration-1500 ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
     >
@@ -62,88 +62,90 @@ const Result = () => {
           <section
             key={i}
             id="section"
-            className="mt-2 mb-8 rounded-xl overflow-hidden bg-gray-200"
+            className="mt-2 mb-8 rounded-xl overflow-hidden border-t-4 border-b-8 border-r-4 border-l-4 border-white bg-gray-200 lg:w-1/2 lg:h-fit lg:my-auto"
           >
-            <table className="w-full divide-y divide-gray-200 rounded-lg">
-              {result[i - 1][`course${i}`].map((row: any, index: number) => (
-                <tbody
-                  key={index}
-                  className="bg-white divide-y divide-gray-200"
-                >
-                  {index === 0 ? (
-                    <tr className="relative w-full h-12 border-t bg-gray-200">
-                      <td className="absolute py-3 ml-2 mt-1 text-left text-sm font-medium text-gray-500 tracking-wider">
-                        ルート {i}
-                      </td>
-                      <td className="absolute right-3 mt-5 text-left text-xs font-medium text-gray-500 tracking-wider">
-                        所要時間: {row.totalDuration}, &nbsp; 片道:&nbsp;
-                        {row.totalFare} 円, &nbsp; 乗換: {row.changes} 回
-                      </td>
-                    </tr>
-                  ) : index % 2 !== 0 ? (
-                    // 色あり奇数行(index === 偶数)
-                    <tr className="w-2/12 bg-violet-200 rounded-xl overflow-hidden">
-                      <td className="h-12 whitespace-nowrap text-xs text-center font-normal text-gray-500">
-                        {row.time.arrivalTime && (
-                          <>
-                            到着 {row.time.arrivalTime}
-                            <br />
-                          </>
-                        )}
-                        {row.time.departureTime && (
-                          <>出発 {row.time.departureTime}</>
-                        )}
-                      </td>
-                      <td className="w-5/12 h-12 whitespace-normal text-bg text-center text-gray-500 border-l-4 border-gray-400">
-                        {row.station}
-                      </td>
-                      <td className="w-4/12 h-12 whitespace-nowrap text-xs text-gray-500">
-                        {row.info.arrivalPlatform && (
-                          <span className="pl-4">
-                            到着 {row.info.arrivalPlatform} 番線
-                            <br />
-                          </span>
-                        )}
-                        {row.info.departurePlatform && (
-                          <span className="pl-4">
-                            出発 {row.info.departurePlatform} 番線
-                          </span>
-                        )}
-                      </td>
-                      <td
-                        className={`relative w-1/12 h-12 whitespace-normal text-xs text-left align-bottom text-gray-500 ${
-                          row.fare ? "" : "border-gray-300 border-l-2"
-                        }`}
-                      >
-                        {row.fare && row.fare.toString().length === 4 ? (
-                          <span className="absolute -ml-5 -mt-4">
-                            &yen;{row.fare}
-                          </span>
-                        ) : row.fare && row.fare.toString().length === 3 ? (
-                          <span className="absolute -ml-4 -mt-4">
-                            &yen;{row.fare}
-                          </span>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ) : (
-                    // 奇数行(index === 偶数)
-                    <tr>
-                      <td className="h-16 whitespace-normal text-xs text-center font-medium text-gray-500">
-                        {row.time.duration}分/{row.time.stations}駅
-                      </td>
-                      <td className="h-16 whitespace-normal text-xs text-center text-gray-500">
-                        {row.info}
-                      </td>
-                      <td className="h-16 whitespace-normal text-sm text-center text-gray-500">
-                        {row.changes}
-                      </td>
-                      <td className="h-16 whitespace-normal text-sm text-center text-gray-500 border-gray-300 border-l-2"></td>
-                    </tr>
-                  )}
-                </tbody>
-              ))}
-            </table>
+            <div className="border-2 border-gray-200 md:p-2 md:m-2 md:border-0">
+              <table className="w-full divide-y divide-gray-200 rounded-lg">
+                {result[i - 1][`course${i}`].map((row: any, index: number) => (
+                  <tbody
+                    key={index}
+                    className="bg-white divide-y divide-gray-200"
+                  >
+                    {index === 0 ? (
+                      <tr className="relative w-full h-12 border-t bg-gray-200">
+                        <td className="absolute py-3 ml-2 mt-1 text-left text-sm font-medium text-gray-500 tracking-wider">
+                          ルート {i}
+                        </td>
+                        <td className="absolute right-3 mt-5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                          所要時間: {row.totalDuration}, &nbsp; 片道:&nbsp;
+                          {row.totalFare} 円, &nbsp; 乗換: {row.changes} 回
+                        </td>
+                      </tr>
+                    ) : index % 2 !== 0 ? (
+                      // 色あり奇数行(index === 偶数)
+                      <tr className="w-2/12 bg-violet-200 rounded-xl overflow-hidden">
+                        <td className="h-12 whitespace-nowrap text-xs text-center font-normal text-gray-500">
+                          {row.time.arrivalTime && (
+                            <>
+                              到着 {row.time.arrivalTime}
+                              <br />
+                            </>
+                          )}
+                          {row.time.departureTime && (
+                            <>出発 {row.time.departureTime}</>
+                          )}
+                        </td>
+                        <td className="w-5/12 h-12 whitespace-normal text-bg text-center text-gray-500 border-l-4 border-gray-400">
+                          {row.station}
+                        </td>
+                        <td className="w-4/12 h-12 whitespace-nowrap text-xs text-gray-500">
+                          {row.info.arrivalPlatform && (
+                            <span className="pl-4">
+                              到着 {row.info.arrivalPlatform} 番線
+                              <br />
+                            </span>
+                          )}
+                          {row.info.departurePlatform && (
+                            <span className="pl-4">
+                              出発 {row.info.departurePlatform} 番線
+                            </span>
+                          )}
+                        </td>
+                        <td
+                          className={`relative w-1/12 h-12 whitespace-normal text-xs text-left align-bottom text-gray-500 ${
+                            row.fare ? "" : "border-gray-300 border-l-2"
+                          }`}
+                        >
+                          {row.fare && row.fare.toString().length === 4 ? (
+                            <span className="absolute -ml-5 -mt-4">
+                              &yen;{row.fare}
+                            </span>
+                          ) : row.fare && row.fare.toString().length === 3 ? (
+                            <span className="absolute -ml-4 -mt-4">
+                              &yen;{row.fare}
+                            </span>
+                          ) : null}
+                        </td>
+                      </tr>
+                    ) : (
+                      // 奇数行(index === 偶数)
+                      <tr>
+                        <td className="h-16 whitespace-normal text-xs text-center font-medium text-gray-500">
+                          {row.time.duration}分/{row.time.stations}駅
+                        </td>
+                        <td className="h-16 whitespace-normal text-xs text-center text-gray-500">
+                          {row.info}
+                        </td>
+                        <td className="h-16 whitespace-normal text-sm text-center text-gray-500">
+                          {row.changes}
+                        </td>
+                        <td className="h-16 whitespace-normal text-sm text-center text-gray-500 border-gray-300 border-l-2"></td>
+                      </tr>
+                    )}
+                  </tbody>
+                ))}
+              </table>
+            </div>
           </section>
         ))}
       <button

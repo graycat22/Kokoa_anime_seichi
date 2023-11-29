@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Anime Touring Route",
+  title: "Aniture",
   description: "アニメの聖地巡礼へようこそ。",
   icons: {
     icon: ["/favicon.ico?v=4"],
