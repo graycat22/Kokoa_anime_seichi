@@ -1,4 +1,3 @@
-import { useRouter } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { load } from "cheerio";
 
@@ -38,9 +37,7 @@ export const GET = async (req: NextRequest, res: NextResponse) => {
 // Geocoding で自治体名から聖地の緯度経度を抽出
 async function getGeocodingData(query: String) {
   try {
-    const res = await fetch(`https://www.geocoding.jp/api/?q=${query}`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`https://www.geocoding.jp/api/?q=${query}`);
     const xmlText = await res.text(); // XML を文字列化
 
     // テキストに変換した XML から緯度を抽出
@@ -63,7 +60,7 @@ async function getGeocodingData(query: String) {
 async function getHeartExpressData(lat: number, lng: number) {
   try {
     const heartExpressURL = `https://express.heartrails.com/api/json?method=getStations&x=${lng}&y=${lat}`;
-    const res = await fetch(heartExpressURL, { cache: "no-store" });
+    const res = await fetch(heartExpressURL);
     const data = await res.json();
     const stationsData = data.response.station[0];
     return stationsData;

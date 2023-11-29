@@ -65,3 +65,48 @@
   color: #ab9be8; /* テキストカラー */
   background-color: #ffffff; /* バックグラウンドカラー */
 }
+
+.chua-header {
+  animation: chua-result-header 0.66s ease-in;
+  animation-delay: 0.8s;
+  animation-fill-mode: backwards;
+}
+
+@keyframes chua-result-header {
+  from {
+    transform: translateX(-167px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.result-header-container {
+  animation: chua-result-header-container 0.76s ease-out;
+  animation-delay: 0.86s;
+  animation-fill-mode: backwards;
+}
+
+@keyframes chua-result-header-container {
+  from {
+    transform: translateX(-167px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.header-time {
+  animation: header-time-animation 1s ease-out;
+  animation-delay: 0.9s;
+  animation-fill-mode: backwards;
+}
+
+@keyframes header-time-animation {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

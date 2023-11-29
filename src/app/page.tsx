@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { areas } from "../library/area";
 import toast, { Toaster } from "react-hot-toast";
 import { emoji } from "@/library/emoji";
+import TsukimoriLogo from "@/components/Tsukimori logo";
 
 const App = () => {
   interface Station {
@@ -306,6 +307,10 @@ const App = () => {
         >
           検索
         </button>
+      </div>
+
+      <div className="fixed bottom-4 -right-10">
+        <TsukimoriLogo />
       </div>
     </div>
   );
