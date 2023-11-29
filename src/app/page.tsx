@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { animeData } from "./library/anime-data";
+import { animeData } from "../library/anime-data";
 import { useRouter } from "next/navigation";
-import { areas } from "./library/area";
+import { areas } from "../library/area";
 import toast, { Toaster } from "react-hot-toast";
+import { emoji } from "@/library/emoji";
 
 const App = () => {
   interface Station {
@@ -21,36 +22,6 @@ const App = () => {
   const [inputValue, setInputValue] = useState<string>(""); // ユーザの最寄り駅インプット
   const [animeTitles, setAnimeTitles] = useState<string[]>([]); // 選択した都道府県に存在するアニメの聖地
   const [isLoaded, setIsLoaded] = useState(false); // ローディングアニメーション用
-  const emoji = [
-    "🗻",
-    "🌱",
-    "🚃",
-    "🐠",
-    "🎏",
-    "🏮",
-    "🎐",
-    "🚠",
-    "⛩",
-    "🛤",
-    "🕋",
-    "⛺️",
-    "🗾",
-    "🎑",
-    "🏞",
-    "🌅",
-    "🌃",
-    "🏙",
-    "🌆",
-    "🌄",
-    "🌁",
-    "🌇",
-    "🌠",
-    "🎆",
-    "🌠",
-    "🌉",
-    "🎇",
-    "🌌",
-  ];
 
   useEffect(() => {
     setIsLoaded(true); // ページがロードされた後にアニメーションを適用するために状態を更新

@@ -52,7 +52,7 @@ const Result = () => {
   return (
     // result[{${i}}]として i < 4; i++ でループ
     <div
-      className={`mx-1 mt-4 mb-16 transition-opacity duration-1500 ${
+      className={`mx-2 mt-4 mb-16 transition-opacity duration-1500 ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
     >
