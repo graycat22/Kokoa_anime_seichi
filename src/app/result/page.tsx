@@ -65,10 +65,10 @@ const Result = () => {
     // result[{${i}}]として i < 4; i++ でループ
     <div className="sm:w-screen md:w-11/12 mx-auto">
       {result.length > 0 && (
-        <header className="mt-2 flex justify-between h-5 lg:flex md:justify-between lg:mx-3">
-          <div className="flex m-0 p-0 justify-between md:w-11/12 lg:w-1/2 md:mx-auto">
-            <div className="chua-header flex justify-between w-fit h-fit -mt-1.5  border-b-2 border-violet-500">
-              <div className="result-header-container m-0 p-0 flex items-end ">
+        <header className="mt-2 flex h-5 justify-between lg:mx-3">
+          <div className="flex justify-between w-full md:w-11/12 lg:w-1/2 md:mx-auto">
+            <div className="chua-header flex justify-between h-fit -mt-1.5  border-b-2 border-violet-500">
+              <div className="result-header-container flex items-end ">
                 <Image
                   src="/Chuachan.png"
                   alt="I am Chua"
@@ -80,7 +80,7 @@ const Result = () => {
                 </div>
               </div>
             </div>
-            <div className="header-time inline-block mr-4 text-sm text-right lg:mr-0">
+            <div className="header-time inline-block w-40 mr-4 text-sm text-right lg:mr-0">
               <p
                 className="inline-block text-cyan-800"
                 style={{ marginRight: "0.3rem" }}
