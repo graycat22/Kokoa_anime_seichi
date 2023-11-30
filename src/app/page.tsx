@@ -164,7 +164,7 @@ const App = () => {
 
   return (
     <div
-      className={`App min-h-screen bg-violet-200 px-5 transition-opacity duration-500 ${
+      className={`App min-h-screen overflow-hidden bg-violet-200 px-5 transition-opacity duration-500 ${
         isLoaded ? "opacity-100" : "opacity-0"
       }`}
     >
