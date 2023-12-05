@@ -18,15 +18,19 @@ const LoginOrRegisterModal = () => {
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     if (isLogin) {
       try {
+        toast.loading("サインイン中…");
         const { email, password } = data;
         await signIn(email, password);
+        toast.success("サインインしました！");
       } catch (error) {
         toast.error("サインインに失敗しました", { duration: 1300 });
       }
     } else {
       try {
+        toast.loading("サインアップ中…");
         const { email, password, displayName } = data;
         await signUp(email, password, displayName);
+        toast.success("ようこそ！");
         setIsLogin(false);
       } catch (error) {
         toast.error("サインアップに失敗しました", { duration: 1300 });

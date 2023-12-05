@@ -60,6 +60,13 @@ const MeccaModal = ({
     setSub(updatedSub);
   };
 
+  const handleResetForm = () => {
+    setTitle("");
+    setKanayomi("");
+    setMain([""]);
+    setSub([""]);
+  };
+
   const handleAddMecca = async () => {
     // button を disable にする
     // const button = document.querySelector(".submit-button");
@@ -116,6 +123,8 @@ const MeccaModal = ({
       }
 
       await addMecca(title, kanayomi, main, sub);
+      dialogRef.current?.close();
+      handleResetForm();
       triggerTableReverse(); // Table の再レンダリング発火
     } catch (error) {
       console.log("サブミットエラー", error);
@@ -152,6 +161,7 @@ const MeccaModal = ({
                 id="title"
                 name="title"
                 placeholder="Required"
+                value={kanayomi}
                 className="input input-xs input-bordered w-full max-w-xs mb-2"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setKanayomi(e.target.value.trim())
@@ -169,6 +179,7 @@ const MeccaModal = ({
                 name="title"
                 placeholder="Required"
                 className="input input-bordered w-full max-w-xs mb-2"
+                value={title}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setTitle(e.target.value.trim())
                 }
