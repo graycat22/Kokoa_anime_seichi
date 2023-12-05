@@ -172,7 +172,8 @@ const LoginOrRegisterModal = () => {
               <div className="relative flex items-center justify-center">
                 <span className="absolute inset-x-0 h-px bg-gray-300"></span>
                 <span className="relative bg-white px-4 text-sm text-gray-400">
-                  SNSアカウントで{isLogin ? "サインイン" : "サインアップ"}する
+                  {/* SNSアカウントで{isLogin ? "サインイン" : "サインアップ"}する */}
+                  🔑
                 </span>
               </div>
 

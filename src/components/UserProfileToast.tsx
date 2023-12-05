@@ -34,7 +34,7 @@ const UserProfileToast = ({
           </div>
         </div>
         {changeTheme && (
-          <div className="absolute mt-2 top-32 left-2 text-gray-800 bg-violet-200 border-2 rounded-xl">
+          <div className="absolute mt-1.5 top-32 right-1 text-gray-800 bg-violet-200 rounded-xl">
             <ThemeChanger />
           </div>
         )}

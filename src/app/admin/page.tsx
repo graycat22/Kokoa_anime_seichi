@@ -64,7 +64,7 @@ const Admin = () => {
     <div>
       <div id="header" className="flex justify-between">
         <button
-          className="-mb-1"
+          className="relative -mb-1"
           onClick={() => setIsProfileShown(!isProfileShown)}
         >
           <div className="avatar -z-20">
@@ -86,6 +86,7 @@ const Admin = () => {
           >
             MECCA DATABASE
           </p>
+          T
         </div>
         <div>
           <SignOutButton />
@@ -98,12 +99,10 @@ const Admin = () => {
             isProfileShown ? "active" : ""
           }`}
         >
-          {isProfileShown && (
-            <UserProfileToast
-              displayName={session?.user.user_metadata.display_name}
-              closeProfile={() => setIsProfileShown(!isProfileShown)}
-            />
-          )}
+          <UserProfileToast
+            displayName={session?.user.user_metadata.display_name}
+            closeProfile={() => setIsProfileShown(!isProfileShown)}
+          />
         </div>
       </div>
       {!session && <LoginOrRegisterModal />}
