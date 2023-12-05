@@ -38,13 +38,13 @@ const AddNewMainModal = ({
     <div className="card card-compact bg-base-100 shadow-2xl rounded-3xl ring ring-gray-100">
       <div className="card-body">
         <h2 className="card-title text-lg">メイン聖地追加</h2>
-        <textarea
-          className="textarea textarea-bordered focus:border-violet-300 focus:outline-violet-300"
+        <input
+          className="input input-bordered focus:border-violet-300 focus:outline-violet-300"
           placeholder="新たなる聖地"
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setNewPlace(e.target.value)
           }
-        ></textarea>
+        ></input>
         <div className="card-actions justify-end -mb-2">
           <button
             className="btn bg-violet-300 hover:bg-violet-400 text-gray-100 hover:text-gray-700"
@@ -85,13 +85,13 @@ export default AddNewMainModal;
 //         <div className="flex">
 //           <h2 className="card-title w-full text-lg">メイン聖地</h2>
 //         </div>
-//         <textarea
-//           className="textarea textarea-bordered"
+//         <input
+//           className="input input-bordered"
 //           placeholder="新たなる聖地"
-//           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+//           onChange={(e: React.ChangeEvent<HTMLinputElement>) =>
 //             setNewPlace(e.target.value)
 //           }
-//         ></textarea>
+//         ></input>
 //         <div className="card-actions justify-end">
 //           <button className="btn bg-gray-300" onClick={handleAddMainPlace}>
 //             追加

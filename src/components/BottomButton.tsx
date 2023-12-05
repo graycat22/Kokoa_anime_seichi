@@ -16,7 +16,7 @@ const BottomButton = ({
   };
 
   return (
-    <div className="btm-nav border-t-2 border-gray-100">
+    <div className="btm-nav py-1 border-t-2 border-gray-100">
       <a
         onClick={deleteCheckedMecca}
         className="link link-neutral link-hover font-semibold mt-1.5 cursor-pointer"
