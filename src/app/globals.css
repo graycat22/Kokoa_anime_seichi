@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* input {
+  border-color: rgb(196 181 253 / var(--tw-border-opacity));
+  ring-color: #c4b5fd;
+} */
+
 .button-container:hover .svg-icon {
   transform: rotate(180deg); /* ホバー時に180度回転するアニメーション */
 }
@@ -110,3 +115,64 @@
     opacity: 1;
   }
 }
+
+#header {
+  animation: admin-header-animation 1s ease-in;
+  admin-delay: 0.5s;
+  animation-fill-mode: backwards;
+}
+
+/* UserProfileToast.css */
+/* アニメーション用のクラス */
+.user-profile-toast {
+  opacity: 0;
+  transform: rotateX(90deg); /* 初期状態は非表示で回転 */
+  transition: opacity 0.3s ease-in-out, transform 0.5s ease-in-out; /* アニメーションの設定 */
+}
+
+/* 表示される状態のスタイル */
+.user-profile-toast.active {
+  opacity: 1;
+  transform: rotateX(0deg); /* 表示時に回転を戻す */
+}
+
+@keyframes admin-header-animation {
+  from {
+    transform: translateX(-50px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.alert-with-buttons {
+  animation: alert-with-buttons-slideIn 0.6s ease-out;
+  animation-fill-mode: backwards;
+}
+
+@keyframes alert-with-buttons-slideIn {
+  from {
+    transform: translateX(-600px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* .alert-with-buttons.slideOut {
+  animation: alert-with-buttons-slideOut 0.6s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes alert-with-buttons-slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(600px);
+    opacity: 0;
+  }
+} */

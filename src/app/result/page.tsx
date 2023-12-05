@@ -1,7 +1,5 @@
 "use client";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -29,8 +27,8 @@ const Result = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/search/${pref}&${code}`
-        );
+          `http://localhost:3000/api/search/${pref}&${code}`
+        ); //${process.env.NEXT_PUBLIC_API_URL}
         const result = await res.json();
         setResult(result);
         console.log("ルートのデータ", result);
@@ -84,12 +82,19 @@ const Result = () => {
                 className="inline-block text-cyan-800"
                 style={{ marginRight: "0.3rem" }}
               >
-                <FontAwesomeIcon
-                  icon={faClock}
-                  bounce
-                  className="text-xl"
-                  color="#a386c6"
-                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="20"
+                  width="20"
+                  viewBox="0 0 512 512"
+                  style={{ color: "#a386c6" }}
+                  className="animate-bounce"
+                >
+                  <path
+                    fill="#a386c6"
+                    d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
+                  />
+                </svg>
               </p>
               {currentTime.toLocaleString()}
             </div>
