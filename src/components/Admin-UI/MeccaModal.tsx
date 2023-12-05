@@ -138,10 +138,7 @@ const MeccaModal = ({
   return (
     <div>
       <div>
-        <a
-          className="link link-neutral link-hover font-semibold"
-          onClick={handleModal}
-        >
+        <a className="link link-hover font-semibold" onClick={handleModal}>
           奉納
         </a>
       </div>

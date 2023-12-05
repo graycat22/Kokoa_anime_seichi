@@ -9,6 +9,7 @@ import Image from "next/image";
 import BottomButton from "@/components/BottomButton";
 import LoginOrRegisterModal from "@/components/HookForms/LoginAndRegister";
 import UserProfileToast from "@/components/UserProfileToast";
+import ThemeChanger from "@/components/ThemeChanger";
 
 const Admin = () => {
   const { session } = useAuth();

@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" data-theme="retro">
+    <html lang="ja">
       <body className={noto.className}>{children}</body>
     </html>
   );
