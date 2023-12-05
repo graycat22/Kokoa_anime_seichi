@@ -435,7 +435,7 @@ const MeccaTable = ({
             <h3 className="inline font-bold text-lg">祈祷</h3>
             <label className="form-control w-full max-w-xs">
               <div className="label">
-                <span className="label-text text-xs">フリガナ</span>
+                <span className="label-text text-xs">カナヨミ</span>
                 <span className="label-text-alt">Make It Katakana</span>
               </div>
               <input

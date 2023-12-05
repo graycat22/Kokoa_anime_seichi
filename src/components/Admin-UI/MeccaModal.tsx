@@ -103,7 +103,7 @@ const MeccaModal = ({
         const updatedSub = sub.filter((_, index) => index !== emptySubIndex);
         if (sub.length !== 1) {
           setSub(updatedSub);
-          toast("空のサブを削除しました", { duration: 36000 });
+          toast("空のサブを削除しました", { duration: 800 });
         }
       }
 
@@ -147,11 +147,11 @@ const MeccaModal = ({
         <div className="modal-box flex-row">
           <div className="w-fit mx-auto mt-5">
             <div className="w-fit">
-              <p className="font-bold text-lg w-fit">聖地を登録</p>
+              <p className="font-bold text-lg w-fit">聖地を巡礼する</p>
             </div>
             <label className="form-control w-full max-w-xs">
               <div className="label">
-                <span className="label-text text-xs">カナヨミ</span>
+                <span className="label-text">カナヨミ</span>
               </div>
               <input
                 type="text"
@@ -159,7 +159,7 @@ const MeccaModal = ({
                 name="title"
                 placeholder="Required"
                 value={kanayomi}
-                className="input input-xs input-bordered w-full max-w-xs mb-2"
+                className="input input-bordered w-full max-w-xs mb-2"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setKanayomi(e.target.value.trim())
                 }
@@ -272,7 +272,7 @@ const MeccaModal = ({
                 className="btn submit-button tracking-eide mt-2"
                 onClick={handleAddMecca}
               >
-                submit
+                奉納
               </button>
             </div>
           </div>

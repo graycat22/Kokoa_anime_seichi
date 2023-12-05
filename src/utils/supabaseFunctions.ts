@@ -52,6 +52,15 @@ export const addMecca = async (
   subPlaces: string[]
 ) => {
   try {
+    // kanayomi がカタカナじゃなかったらエラー
+    const isKatakana = /^[ァ-ヶー]+$/; // カタカナの正規表現パターン
+    if (!isKatakana.test(kanayomi)) {
+      // カタカナ以外の文字が含まれている場合の処理
+      return toast.error("カナヨミはカタカナを入力してください！", {
+        duration: 1000,
+      });
+    }
+
     // タイトル重複か確認
     const allTitles = await getAllTitles();
     const existingTitle = allTitles.find((mecca) => mecca.title === title);
@@ -279,6 +288,14 @@ export const updateTitle = async (titleId: string, title: string) => {
 
 // カナヨミを更新
 export const updateKanayomi = async (titleId: string, kanayomi: string) => {
+  // kanayomi がカタカナじゃなかったらエラー
+  const isKatakana = /^[ァ-ヶー]+$/; // カタカナの正規表現パターン
+  if (!isKatakana.test(kanayomi)) {
+    // カタカナ以外の文字が含まれている場合の処理
+    return toast.error("カナヨミはカタカナを入力してください！", {
+      duration: 1000,
+    });
+  }
   try {
     console.log(kanayomi, titleId);
     const { error } = await supabase
