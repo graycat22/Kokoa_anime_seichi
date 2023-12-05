@@ -18,25 +18,32 @@ const LoginOrRegisterModal = () => {
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     if (isLogin) {
       try {
-        toast.loading("サインイン中…");
+        toast.loading("サインイン中…", { duration: 4000 });
         const { email, password } = data;
         await signIn(email, password);
-        toast.success("サインインしました！");
+        toast.success("サインインしました！", { duration: 2000 });
       } catch (error) {
-        toast.error("サインインに失敗しました", { duration: 1300 });
+        toast.error("サインインに失敗しました", { duration: 2000 });
       }
     } else {
       try {
-        toast.loading("サインアップ中…");
+        toast.loading("サインアップ中…", { duration: 1500 });
         const { email, password, displayName } = data;
         await signUp(email, password, displayName);
-        toast.success("ようこそ！");
+        toast.success("ようこそ！", { icon: "🛤️", duration: 1000 });
         setIsLogin(false);
       } catch (error) {
         toast.error("サインアップに失敗しました", { duration: 1300 });
       }
     }
   };
+
+  const wrappedSubmit = handleSubmit(onSubmit);
+  toast.promise(wrappedSubmit(), {
+    loading: "Loading",
+    success: "Got the data",
+    error: "Error when fetching",
+  });
 
   console.log("これ", watch("email"), watch("password"), errors);
   console.log("isLoggedIn?, session", session);

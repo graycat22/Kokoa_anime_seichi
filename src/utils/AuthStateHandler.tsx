@@ -62,7 +62,7 @@ const useAuth = () => {
       if (signUpError) {
         toast.error(`signUpError ${signUpError.message}`, { duration: 2000 });
         console.log("signUpError", signUpError);
-        return;
+        return toast.error("入力内容をご確認ください", { duration: 2000 });
       }
 
       toast.success("登録に成功しました。メール認証をしてください", {
