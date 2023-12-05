@@ -25,7 +25,7 @@ const LoginOrRegisterModal = () => {
       }
     } else {
       try {
-        toast.loading("サインアップ中…", { duration: 2500 });
+        toast.loading("サインアップ中…", { duration: 3800 });
         const { email, password, displayName } = data;
         await signUp(email, password, displayName);
         toast.success("ようこそ！", { icon: "🛤️", duration: 1000 });

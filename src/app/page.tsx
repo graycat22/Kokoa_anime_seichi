@@ -246,7 +246,7 @@ const App = () => {
           <input
             type="text"
             placeholder="最寄り駅を入力"
-            className="block w-full rounded-xl border-0 h-12 mb-1 py-1.5 pl-10 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
+            className="block w-full rounded-xl border-0 h-12 mb-1 py-1.5 pl-10 pr-20 bg-white text-gray-900 ring-1 ring-inset ring-gray-300 place-holder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-violet-500 sm:text-sm sm:leading-6 outline-none"
             required
             value={inputValue}
             onChange={handleChangeStation}

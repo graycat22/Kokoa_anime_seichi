@@ -66,7 +66,7 @@ const useAuth = () => {
       }
 
       toast.success("登録に成功しました。メール認証をしてください", {
-        duration: 2000,
+        duration: 2500,
       });
 
       // ログイン処理
