@@ -1,6 +1,7 @@
 import {
   checkDuplicates,
   deleteMain,
+  deleteMecca,
   deleteSub,
   getAllMecca,
   updateKanayomi,
@@ -14,7 +15,13 @@ import AlertWithButtons from "./AlertWithButtons";
 import AddNewMainModal from "./AddNewMainModal";
 import AddNewSubModal from "./AddNewSubModal";
 
-const MeccaTable = ({ isReversed }: { isReversed: boolean }) => {
+const MeccaTable = ({
+  isReversed,
+  isConfirmed,
+}: {
+  isReversed: boolean;
+  isConfirmed: boolean;
+}) => {
   const [isActiveRow, setIsActiveRow] = useState<string | null>(null);
   const [mecca, setMecca] = useState<Anime[]>([]);
   const [selectedAnime, setSelectedAnime] = useState<Anime | null>(null);
@@ -28,7 +35,7 @@ const MeccaTable = ({ isReversed }: { isReversed: boolean }) => {
   const [isMainModalOpen, setIsMainModalOpen] = useState<boolean>(false);
   const [isSubModalOpen, setIsSubModalOpen] = useState<boolean>(false);
   const [isCheckedAll, setIsCheckedAll] = useState<boolean>(false);
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [checkedItems, setCheckedItems] = useState<Anime[]>([]);
 
   // 自動更新,リーバース時に更新
   useEffect(() => {
@@ -82,6 +89,10 @@ const MeccaTable = ({ isReversed }: { isReversed: boolean }) => {
     // コンポーネントがアンマウントされたときにインターバルをクリアする
     return () => clearInterval(interval);
   }, [isReversed, count]);
+
+  useEffect(() => {
+    deleteAllMecca();
+  }, [isConfirmed]);
 
   const handleRefresh = () => {
     setCount(count - 1);
@@ -295,25 +306,43 @@ const MeccaTable = ({ isReversed }: { isReversed: boolean }) => {
   const handleMasterCheckbox = () => {
     setIsCheckedAll((prev) => !prev);
     if (!isCheckedAll) {
-      const allIds = mecca.map((anime) => anime.title_id);
-      setCheckedItems(allIds);
+      setCheckedItems(mecca);
     } else {
       setCheckedItems([]);
     }
   };
 
-  const handleCheckbox = (titleId: string) => {
+  const handleCheckbox = (anime: Anime) => {
     setCheckedItems((prevItems) => {
-      // 与えられた値が配列に含まれているか
-      const isChecked = prevItems.includes(titleId);
+      const isChecked = prevItems.some(
+        (item) => item.title_id === anime.title_id
+      );
 
       if (!isChecked) {
-        return [...prevItems, titleId];
+        return [...prevItems, anime];
       } else {
-        return prevItems.filter((id) => id != titleId);
+        return prevItems.filter((item) => item.title_id !== anime.title_id);
       }
     });
     setIsCheckedAll(false);
+  };
+
+  const deleteAllMecca = async () => {
+    if (checkedItems.length > 0) {
+      try {
+        for (const anime of checkedItems) {
+          await deleteMecca(
+            anime.title_id,
+            anime.main.map((item) => item.main_id),
+            anime.sub.map((item) => item.sub_id)
+          );
+        }
+        toast.success("正常に削除しました", { duration: 1000 });
+        handleRefresh();
+      } catch (error) {
+        toast.error("削除に失敗しました", { duration: 1000 });
+      }
+    }
   };
 
   console.log("チェックボックス", checkedItems);
@@ -321,7 +350,7 @@ const MeccaTable = ({ isReversed }: { isReversed: boolean }) => {
   return (
     <div className="overflow-x-auto mb-16">
       <table className="table">
-        <thead>
+        <thead className="border-b-2 border-gray-00">
           <tr>
             <th>
               <label>
@@ -354,8 +383,10 @@ const MeccaTable = ({ isReversed }: { isReversed: boolean }) => {
                     type="checkbox"
                     className="checkbox border-violet-300 [--chkbg:theme(colors.violet.300)] [--chkfg:oklch(var(--sc))]"
                     name="checkbox"
-                    checked={checkedItems.includes(anime.title_id)}
-                    onChange={() => handleCheckbox(anime.title_id)}
+                    checked={checkedItems.some(
+                      (item) => item.title_id === anime.title_id
+                    )}
+                    onChange={() => handleCheckbox(anime)}
                   />
                 </label>
               </th>
@@ -587,26 +618,26 @@ const MeccaTable = ({ isReversed }: { isReversed: boolean }) => {
               ))}
             </label>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between mt-3">
               <div
                 onDrop={(e) => handleDropSub(e, "trash")}
                 onDragOver={(e) => e.preventDefault()}
-                className="w-12 h-12 bg-white border-2 border-black flex items-center justify-center cursor-pointer relative"
+                className="btn btn-active btn-ghost cursor-pointer relative"
               >
-                Trash
+                ごみ箱
               </div>
               <div>
                 <button
                   className="btn btn-outline sm:btn-sm md:btn-md lg:btn-lg"
                   onClick={handleOpenAlert}
                 >
-                  Delete
+                  削除
                 </button>
                 <button
                   className="btn btn-outline sm:btn-sm md:btn-md lg:btn-lg ml-2"
                   onClick={handleUpdate}
                 >
-                  Update
+                  更新
                 </button>
               </div>
             </div>

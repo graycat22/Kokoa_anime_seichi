@@ -15,11 +15,16 @@ const Admin = () => {
   const [nowLoading, setNowLoading] = useState<boolean>(true);
   const [updateTable, setUpdateTable] = useState<number>(0); // 初期値を 0 の識別子に変更
   const [isReversed, setIsReversed] = useState<boolean>(false);
+  const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [isProfileShown, setIsProfileShown] = useState<boolean>(false);
 
   // Tableコンポーネントの再レンダリングをトリガーする関数
   const triggerTableReverse = () => {
     setUpdateTable((prevState) => prevState + 1); // 識別子を更新して再レンダリングをトリガー
+  };
+
+  const triggerDeleteMecca = () => {
+    setIsConfirmed(!isConfirmed);
   };
 
   // Table 内でデータをソートすることを要求する関数
@@ -47,6 +52,7 @@ const Admin = () => {
         </div>
         <BottomButton
           onSort={sortData}
+          deleteCheckedMecca={triggerDeleteMecca}
           triggerTableReverse={triggerTableReverse}
         />
       </>
@@ -101,12 +107,17 @@ const Admin = () => {
       </div>
       {!session && <LoginOrRegisterModal />}
       {session ? (
-        <MeccaTable key={updateTable} isReversed={isReversed} />
+        <MeccaTable
+          key={updateTable}
+          isReversed={isReversed}
+          isConfirmed={isConfirmed}
+        />
       ) : null}
       {session ? (
         <BottomButton
           onSort={sortData}
           triggerTableReverse={triggerTableReverse}
+          deleteCheckedMecca={triggerDeleteMecca}
         />
       ) : null}
     </div>

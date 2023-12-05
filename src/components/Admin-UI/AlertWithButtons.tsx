@@ -1,4 +1,4 @@
-import { deleteMain, deleteMecca } from "@/utils/supabaseFunctions";
+import { deleteMecca } from "@/utils/supabaseFunctions";
 import toast from "react-hot-toast";
 
 const AlertWithButtons = ({
