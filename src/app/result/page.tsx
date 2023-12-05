@@ -27,8 +27,8 @@ const Result = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/search/${pref}&${code}`
-        ); //${process.env.NEXT_PUBLIC_API_URL}
+          `${process.env.NEXT_PUBLIC_API_URL}/api/search/${pref}&${code}`
+        );
         const result = await res.json();
         setResult(result);
         console.log("ルートのデータ", result);
