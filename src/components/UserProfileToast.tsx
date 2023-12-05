@@ -1,3 +1,5 @@
+import useAuth from "@/utils/AuthStateHandler";
+
 const UserProfileToast = ({
   displayName,
   closeProfile,
@@ -5,16 +7,24 @@ const UserProfileToast = ({
   displayName: string;
   closeProfile: () => void;
 }) => {
+  const { session } = useAuth();
   return (
-    <div className="stats shadow bg-violet-200" onClick={() => closeProfile()}>
-      <div className="stat w-44">
-        <div className="stat-title font-sans tracking-wide">ADMIN</div>
-        <div className="stat-value tracking-wide">&nbsp;{displayName}</div>
-        <div className="stat-desc text-right mt-2 tracking-tight">
-          オンライン中🟢
+    session && (
+      <div
+        className="stats shadow bg-violet-200 p-5"
+        onClick={() => closeProfile()}
+      >
+        <div className="w-fit">
+          <div className="font-sans tracking-wide">ADMIN</div>
+          <div className="text-center text-xl font-semibold whitespace-nowrap tracking-wide">
+            &nbsp;{displayName}
+          </div>
+          <div className="stat-desc text-right mt-2 tracking-tight">
+            オンライン中🟢
+          </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 

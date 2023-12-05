@@ -18,32 +18,23 @@ const LoginOrRegisterModal = () => {
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     if (isLogin) {
       try {
-        toast.loading("サインイン中…", { duration: 4000 });
         const { email, password } = data;
         await signIn(email, password);
-        toast.success("サインインしました！", { duration: 2000 });
       } catch (error) {
         toast.error("サインインに失敗しました", { duration: 2000 });
       }
     } else {
       try {
-        toast.loading("サインアップ中…", { duration: 1500 });
+        toast.loading("サインアップ中…", { duration: 2500 });
         const { email, password, displayName } = data;
         await signUp(email, password, displayName);
         toast.success("ようこそ！", { icon: "🛤️", duration: 1000 });
-        setIsLogin(false);
+        setIsLogin(!isLogin);
       } catch (error) {
         toast.error("サインアップに失敗しました", { duration: 1300 });
       }
     }
   };
-
-  const wrappedSubmit = handleSubmit(onSubmit);
-  toast.promise(wrappedSubmit(), {
-    loading: "Loading",
-    success: "Got the data",
-    error: "Error when fetching",
-  });
 
   console.log("これ", watch("email"), watch("password"), errors);
   console.log("isLoggedIn?, session", session);
@@ -90,9 +81,9 @@ const LoginOrRegisterModal = () => {
                           "ディスプレイネームは12文字以内で入力してください",
                       },
                       pattern: {
-                        value: /^[a-zA-Z0-9_]+$/,
+                        value: /^[ぁ-んァ-ヶ一-龠a-zA-Z0-9_.\-]+$/,
                         message:
-                          "ディスプレイネームは英数字とアンダースコア(_)のみが許可されています",
+                          "ディスプレイネームはひらがな、カタカナ、漢字、英数字、アンダースコア、ドット、ハイフンのみが許可されています",
                       },
                     })}
                     name="displayName"

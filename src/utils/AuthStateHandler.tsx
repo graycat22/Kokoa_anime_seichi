@@ -111,7 +111,8 @@ const useAuth = () => {
         email: email,
         password: password,
       });
-      if (signInError) return;
+      if (signInError)
+        return toast.error("入力内容をご確認ください", { duration: 2000 });
 
       toast.success("サインインしました！", { duration: 2500 });
     } catch (error) {
