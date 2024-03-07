@@ -86,7 +86,6 @@ const Admin = () => {
           >
             MECCA DATABASE
           </p>
-          T
         </div>
         <div>
           <SignOutButton />
