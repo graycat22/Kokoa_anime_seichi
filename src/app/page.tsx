@@ -7,6 +7,7 @@ import { areas } from "../library/area";
 import toast, { Toaster } from "react-hot-toast";
 import { emoji } from "@/library/emoji";
 import TsukimoriLogo from "@/components/Tsukimori logo";
+import Link from "next/link";
 
 const App = () => {
   interface Station {
@@ -170,7 +171,7 @@ const App = () => {
     >
       <Toaster />
       <div className="flex justify-center items-center">
-        <h1 className="leading-loose tracking-wider py-10 text-xl antialiased">
+        <h1 className="leading-loose tracking-wider py-10 text-xl antialiased text-gray-800">
           聖地行き方検索ツール
         </h1>
       </div>
@@ -308,6 +309,13 @@ const App = () => {
           検索
         </button>
       </div>
+
+      <Link
+        href="/admin"
+        className="fixed bottom-16 right-10 p-2 rounded-md bg-slate-200 text-gray-800"
+      >
+        管理ページ
+      </Link>
 
       <div className="fixed bottom-4 -right-10">
         <TsukimoriLogo />

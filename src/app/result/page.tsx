@@ -241,6 +241,21 @@ const Result = () => {
           <TsukimoriLogo />
         </div>
       )}
+      <div className="w-full px-5">
+        <div>お知らせ</div>
+        <div>
+          <p>
+            駅すぱあとのWebスクレイピングが禁止となったため、乗り換え案内の表示の代わりとして以下に
+            URL を表示します。
+          </p>
+          <Link
+            href={result[4] || ""}
+            className="mt-5 hover:text-gray-500 duration-300"
+          >
+            {result[4]?.slice(0, 60)}
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

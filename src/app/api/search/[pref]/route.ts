@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { load } from "cheerio";
 
+let resultURL = "";
+
 export const GET = async (req: NextRequest, res: NextResponse) => {
   try {
     // URL `...vercel.app/api/search/目的都道府県&出発駅コード` から目的都道府県と出発駅を抜き出す
@@ -27,6 +29,7 @@ export const GET = async (req: NextRequest, res: NextResponse) => {
     );
 
     const result = await getRoute(course);
+    result.push(resultURL);
 
     return NextResponse.json(result);
   } catch (error) {
@@ -95,6 +98,7 @@ async function searchRouteByEkispert(destination: String, departure: String) {
     const data = await res.json();
     const courseURL = data.ResultSet.ResourceURI;
     console.log("URL", courseURL);
+    resultURL = courseURL;
     return courseURL;
   } catch (error) {
     console.error("Ekispert APIでエラーが発生しました:", error);
@@ -107,6 +111,8 @@ async function getRoute(url: string) {
   const data = await response.text();
   const $ = load(data);
   const results: Object[] = [];
+
+  console.log("$$$$$$$$$$$$$", $.html());
 
   for (let i = 1; i <= 4; i++) {
     const oddIndexResults: Object[] = [];

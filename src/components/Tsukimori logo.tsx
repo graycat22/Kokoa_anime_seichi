@@ -9,7 +9,10 @@ const TsukimoriLogo = () => {
         <div className="text-sm mr-1">月守理工大学</div>
       </div>
       <div className="button-click-animation mr-16 lg:mr-40 flex cursor-pointer">
-        <Link href="https://antuor.vercel.app/" className="w-full h-full">
+        <Link
+          href="https://tsukimori-dialogue.onrender.com"
+          className="w-full h-full"
+        >
           <Image
             src="/TsukimoriUniversity.png"
             alt="Tuskimori University logo"

@@ -9,7 +9,6 @@ import Image from "next/image";
 import BottomButton from "@/components/BottomButton";
 import LoginOrRegisterModal from "@/components/HookForms/LoginAndRegister";
 import UserProfileToast from "@/components/UserProfileToast";
-import ThemeChanger from "@/components/ThemeChanger";
 
 const Admin = () => {
   const { session } = useAuth();
@@ -119,6 +118,14 @@ const Admin = () => {
           deleteCheckedMecca={triggerDeleteMecca}
         />
       ) : null}
+
+      {!session && (
+        <div className="ml-4 mt-3">
+          <p>メールアドレス：「rirodo@catgroup.uk」</p>
+          <p>パスワード：「EZTRaN9iOajmn!Z」</p>
+          <p>※「」は含みません</p>
+        </div>
+      )}
     </div>
   );
 };
